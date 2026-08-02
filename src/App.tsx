@@ -5,6 +5,10 @@ import AuthLayout from './layouts/AuthLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import PatientList from './pages/Patients/PatientList';
+import PatientForm from './pages/Patients/PatientForm';
+import PatientDetails from './pages/Patients/PatientDetails';
+import AppointmentList from './pages/Appointments/AppointmentList';
+import AppointmentForm from './pages/Appointments/AppointmentForm';
 import './index.css';
 
 // Component to protect routes based on auth status is handled in Layouts
@@ -23,8 +27,12 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/patients" element={<PatientList />} />
-            {/* Add more routes here as needed */}
-            <Route path="/appointments" element={<div style={{padding: '2rem'}}>Appointments Page (Coming Soon)</div>} />
+            <Route path="/patients/new" element={<PatientForm />} />
+            <Route path="/patients/:id" element={<PatientDetails />} />
+            <Route path="/patients/:id/edit" element={<PatientForm />} />
+            
+            <Route path="/appointments" element={<AppointmentList />} />
+            <Route path="/appointments/new" element={<AppointmentForm />} />
           </Route>
 
           {/* Fallback */}

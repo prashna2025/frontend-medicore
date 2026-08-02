@@ -60,7 +60,7 @@ const PatientList = () => {
           <h3>Patients</h3>
           <p>Manage hospital patients and records.</p>
         </div>
-        <button className="btn btn-primary">
+        <button className="btn btn-primary" onClick={() => window.location.href = '/patients/new'}>
           <Plus size={18} style={{ marginRight: '0.5rem' }} />
           Add Patient
         </button>
@@ -120,7 +120,7 @@ const PatientList = () => {
                     </td>
                     <td>{patient.bloodGroup}</td>
                     <td>
-                      <button className={styles.actionLink}>View</button>
+                      <button className={styles.actionLink} onClick={() => window.location.href = `/patients/${patient.id}`}>View</button>
                     </td>
                   </tr>
                 ))
