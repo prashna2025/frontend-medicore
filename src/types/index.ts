@@ -6,61 +6,81 @@ export interface ApiResponse<T> {
 
 export interface PagedResponse<T> {
   content: T[];
-  pageNumber: number;
-  pageSize: number;
+  page?: number;
+  size?: number;
+  pageNumber?: number;
+  pageSize?: number;
   totalElements: number;
   totalPages: number;
-  last: boolean;
+  last?: boolean;
+  first?: boolean;
+  hasNext?: boolean;
+  hasPrevious?: boolean;
+  number?: number;
 }
 
-export enum Gender {
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
-  OTHER = 'OTHER'
-}
+export type Gender = 'MALE' | 'FEMALE' | 'OTHER';
+export const Gender = {
+  MALE: 'MALE' as Gender,
+  FEMALE: 'FEMALE' as Gender,
+  OTHER: 'OTHER' as Gender
+} as const;
 
-export enum BloodGroup {
-  A_POSITIVE = 'A_POSITIVE',
-  A_NEGATIVE = 'A_NEGATIVE',
-  B_POSITIVE = 'B_POSITIVE',
-  B_NEGATIVE = 'B_NEGATIVE',
-  AB_POSITIVE = 'AB_POSITIVE',
-  AB_NEGATIVE = 'AB_NEGATIVE',
-  O_POSITIVE = 'O_POSITIVE',
-  O_NEGATIVE = 'O_NEGATIVE'
-}
+export type BloodGroup = 
+  | 'A_POSITIVE'
+  | 'A_NEGATIVE'
+  | 'B_POSITIVE'
+  | 'B_NEGATIVE'
+  | 'AB_POSITIVE'
+  | 'AB_NEGATIVE'
+  | 'O_POSITIVE'
+  | 'O_NEGATIVE';
+export const BloodGroup = {
+  A_POSITIVE: 'A_POSITIVE' as BloodGroup,
+  A_NEGATIVE: 'A_NEGATIVE' as BloodGroup,
+  B_POSITIVE: 'B_POSITIVE' as BloodGroup,
+  B_NEGATIVE: 'B_NEGATIVE' as BloodGroup,
+  AB_POSITIVE: 'AB_POSITIVE' as BloodGroup,
+  AB_NEGATIVE: 'AB_NEGATIVE' as BloodGroup,
+  O_POSITIVE: 'O_POSITIVE' as BloodGroup,
+  O_NEGATIVE: 'O_NEGATIVE' as BloodGroup
+} as const;
 
-export enum Days {
-  MONDAY = 'MONDAY',
-  TUESDAY = 'TUESDAY',
-  WEDNESDAY = 'WEDNESDAY',
-  THURSDAY = 'THURSDAY',
-  FRIDAY = 'FRIDAY',
-  SATURDAY = 'SATURDAY',
-  SUNDAY = 'SUNDAY'
-}
+export type Days = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
+export const Days = {
+  MONDAY: 'MONDAY' as Days,
+  TUESDAY: 'TUESDAY' as Days,
+  WEDNESDAY: 'WEDNESDAY' as Days,
+  THURSDAY: 'THURSDAY' as Days,
+  FRIDAY: 'FRIDAY' as Days,
+  SATURDAY: 'SATURDAY' as Days,
+  SUNDAY: 'SUNDAY' as Days
+} as const;
 
-export enum AppointmentStatus {
-  SCHEDULED = 'SCHEDULED',
-  CHECKED_IN = 'CHECKED_IN',
-  IN_CONSULTATION = 'IN_CONSULTATION',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED'
-}
+export type AppointmentStatus = 'SCHEDULED' | 'CHECKED_IN' | 'IN_CONSULTATION' | 'COMPLETED' | 'CANCELLED';
+export const AppointmentStatus = {
+  SCHEDULED: 'SCHEDULED' as AppointmentStatus,
+  CHECKED_IN: 'CHECKED_IN' as AppointmentStatus,
+  IN_CONSULTATION: 'IN_CONSULTATION' as AppointmentStatus,
+  COMPLETED: 'COMPLETED' as AppointmentStatus,
+  CANCELLED: 'CANCELLED' as AppointmentStatus
+} as const;
 
-export enum InvoiceStatus {
-  PENDING = 'PENDING',
-  PARTIALLY_PAID = 'PARTIALLY_PAID',
-  PAID = 'PAID',
-  CANCELLED = 'CANCELLED'
-}
+export type InvoiceStatus = 'PENDING' | 'PARTIALLY_PAID' | 'PAID' | 'CANCELLED';
+export const InvoiceStatus = {
+  PENDING: 'PENDING' as InvoiceStatus,
+  PARTIALLY_PAID: 'PARTIALLY_PAID' as InvoiceStatus,
+  PAID: 'PAID' as InvoiceStatus,
+  CANCELLED: 'CANCELLED' as InvoiceStatus
+} as const;
 
-export enum PaymentMethod {
-  CASH = 'CASH',
-  CARD = 'CARD',
-  INSURANCE = 'INSURANCE',
-  ONLINE = 'ONLINE'
-}
+export type PaymentMethod = 'CASH' | 'CARD' | 'INSURANCE' | 'ONLINE';
+export const PaymentMethod = {
+  CASH: 'CASH' as PaymentMethod,
+  CARD: 'CARD' as PaymentMethod,
+  INSURANCE: 'INSURANCE' as PaymentMethod,
+  ONLINE: 'ONLINE' as PaymentMethod
+} as const;
 
 // Patient Models
 export interface Patient {

@@ -51,5 +51,10 @@ export const doctorApi = {
 
   deleteSchedule: async (id: string): Promise<void> => {
     await apiClient.delete(`/doctor-schedules/${id}`);
+  },
+
+  getMyTodayAppointments: async (): Promise<any[]> => {
+    const response = await apiClient.get<ApiResponse<any[]>>(`/v1/doctors/me/appointments/today`);
+    return response.data.data;
   }
 };

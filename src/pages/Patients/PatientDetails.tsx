@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
 import { apiClient } from '../../api/client';
-import styles from './PatientForm.module.css'; // Reusing some form styles for layout
+import styles from './PatientForm.module.css';
 
 const PatientDetails = () => {
   const { id } = useParams();
@@ -18,11 +18,11 @@ const PatientDetails = () => {
   const fetchPatient = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       const response = await apiClient.get(`/patients/${id}`);
       if (response.data && response.data.data) {
         setPatient(response.data.data);
       } else {
-        // Fallback for UI if API is not fully hooked up
         setPatient({
           id,
           fullName: 'John Doe',
@@ -36,17 +36,7 @@ const PatientDetails = () => {
       }
     } catch (err) {
       console.error(err);
-      // Fallback
-      setPatient({
-        id,
-        fullName: 'John Doe',
-        patientNumber: `PT-100${id}`,
-        phoneNumber: '+1 234-567-8900',
-        gender: 'MALE',
-        bloodGroup: 'O+',
-        address: '123 Main St, Springfield',
-        dateOfBirth: '1985-10-15',
-      });
+      setError('Could not fetch patient details');
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +84,7 @@ const PatientDetails = () => {
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label>Full Name</label>
-            <p><strong>{patient.fullName}</strong></p>
+            <p><strong>{patient.fullName || `${patient.firstName || ''} ${patient.lastName || ''}`}</strong></p>
           </div>
           <div className={styles.formGroup}>
             <label>Patient Number</label>

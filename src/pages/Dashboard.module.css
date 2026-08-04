@@ -5,18 +5,28 @@
 }
 
 .welcome h3 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
+  font-weight: 700;
   margin-bottom: 0.25rem;
+  color: #0f172a;
 }
 
 .welcome p {
-  color: var(--text-muted);
+  color: #64748b;
 }
 
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
+}
+
+.statCard {
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .statHeader {
@@ -27,10 +37,10 @@
 }
 
 .statIcon {
-  background-color: var(--primary-50);
-  color: var(--primary-600);
+  background-color: #eff6ff;
+  color: #2563eb;
   padding: 0.75rem;
-  border-radius: var(--radius-lg);
+  border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,21 +50,64 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  color: var(--secondary-500);
+  color: #10b981;
   font-size: 0.875rem;
   font-weight: 500;
-  background-color: var(--secondary-50);
+  background-color: #ecfdf5;
   padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-sm);
+  border-radius: 0.25rem;
 }
 
 .statBody h4 {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: #64748b;
   margin-bottom: 0.25rem;
 }
 
 .statBody h2 {
-  font-size: 2rem;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #0f172a;
   margin: 0;
+}
+
+.quickActions {
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+}
+
+.quickActions h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1e293b;
+}
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.actionBtn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
 }

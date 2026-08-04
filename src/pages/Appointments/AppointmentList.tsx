@@ -1,22 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, Calendar as CalendarIcon, Clock, User, X } from 'lucide-react';
-import { apiClient } from '../../api/client';
+import { Search, Plus, Clock, User, CheckCircle, XCircle, FileText } from 'lucide-react';
+import { appointmentApi } from '../../api/appointmentApi';
 import { useNavigate } from 'react-router-dom';
+import type { Appointment } from '../../types';
 import styles from './AppointmentList.module.css';
-
-interface Appointment {
-  id: string;
-  patientName: string;
-  doctorName: string;
-  appointmentDate: string;
-  appointmentTime: string;
-  status: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED';
-  reason: string;
-}
 
 const AppointmentList = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,50 +18,48 @@ const AppointmentList = () => {
   const fetchAppointments = async () => {
     setIsLoading(true);
     try {
-      const response = await apiClient.get('/appointments');
-      if (response.data && response.data.data) {
-        setAppointments(response.data.data.content || response.data.data);
-      }
+      const res = await appointmentApi.getTodayAppointments();
+      setAppointments(res || []);
     } catch (error) {
-      console.error('Failed to fetch appointments', error);
-      // Fallback data
-      setAppointments([
-        { id: '1', patientName: 'John Doe', doctorName: 'Dr. Smith', appointmentDate: '2026-08-05', appointmentTime: '10:00 AM', status: 'SCHEDULED', reason: 'General Checkup' },
-        { id: '2', patientName: 'Jane Smith', doctorName: 'Dr. Johnson', appointmentDate: '2026-08-05', appointmentTime: '11:30 AM', status: 'SCHEDULED', reason: 'Follow-up' },
-        { id: '3', patientName: 'Robert Johnson', doctorName: 'Dr. Davis', appointmentDate: '2026-08-04', appointmentTime: '09:00 AM', status: 'COMPLETED', reason: 'Blood Test' },
-      ]);
+      console.error('Failed to fetch today appointments', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const getStatusBadgeClass = (status: string) => {
-    switch(status) {
-      case 'SCHEDULED': return styles.badgeScheduled;
-      case 'COMPLETED': return styles.badgeCompleted;
-      case 'CANCELLED': return styles.badgeCancelled;
-      default: return styles.badgeDefault;
+  const handleCheckIn = async (id: string) => {
+    try {
+      await appointmentApi.checkInAppointment(id);
+      fetchAppointments();
+    } catch (err) {
+      alert('Failed to check in appointment');
     }
   };
 
-  const cancelAppointment = async (id: string) => {
-    if (window.confirm('Are you sure you want to cancel this appointment?')) {
+  const handleCancel = async (id: string) => {
+    if (window.confirm('Cancel this appointment?')) {
       try {
-        await apiClient.patch(`/appointments/${id}/cancel`);
-        fetchAppointments(); // refresh
+        await appointmentApi.cancelAppointment(id);
+        fetchAppointments();
       } catch (err) {
-        console.error(err);
         alert('Failed to cancel appointment');
       }
     }
   };
 
+  const filtered = appointments.filter(
+    (a) =>
+      a.patientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      a.doctorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      a.department?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <div>
-          <h3>Appointments</h3>
-          <p>Schedule and manage patient appointments.</p>
+          <h3>Today's Appointments Queue</h3>
+          <p>Schedule patient check-ins, cancellations, and start consultations.</p>
         </div>
         <button className="btn btn-primary" onClick={() => navigate('/appointments/new')}>
           <Plus size={18} style={{ marginRight: '0.5rem' }} />
@@ -83,8 +73,10 @@ const AppointmentList = () => {
             <Search className={styles.searchIcon} size={18} />
             <input 
               type="text" 
-              placeholder="Search appointments..."
+              placeholder="Search patient, doctor or department..."
               className="input-field"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
@@ -95,8 +87,8 @@ const AppointmentList = () => {
               <tr>
                 <th>Patient</th>
                 <th>Doctor</th>
-                <th>Date & Time</th>
-                <th>Reason</th>
+                <th>Department</th>
+                <th>Time</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -106,38 +98,58 @@ const AppointmentList = () => {
                 <tr>
                   <td colSpan={6} className={styles.emptyState}>Loading appointments...</td>
                 </tr>
-              ) : appointments.length === 0 ? (
+              ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className={styles.emptyState}>No appointments found.</td>
+                  <td colSpan={6} className={styles.emptyState}>No appointments found for today.</td>
                 </tr>
               ) : (
-                appointments.map(apt => (
+                filtered.map((apt) => (
                   <tr key={apt.id}>
                     <td className={styles.patientName}>
-                      <User size={16} style={{marginRight: '0.5rem', color: 'var(--text-secondary)'}} />
+                      <User size={16} style={{ marginRight: '0.5rem', color: '#64748b' }} />
                       {apt.patientName}
                     </td>
-                    <td>{apt.doctorName}</td>
+                    <td>Dr. {apt.doctorName}</td>
+                    <td>{apt.department || 'General'}</td>
                     <td>
-                      <div style={{display: 'flex', flexDirection: 'column', gap: '0.25rem'}}>
-                        <span style={{display: 'flex', alignItems: 'center', fontSize: '0.875rem'}}>
-                          <CalendarIcon size={14} style={{marginRight: '0.25rem'}} /> {apt.appointmentDate}
-                        </span>
-                        <span style={{display: 'flex', alignItems: 'center', fontSize: '0.875rem', color: 'var(--text-secondary)'}}>
-                          <Clock size={14} style={{marginRight: '0.25rem'}} /> {apt.appointmentTime}
-                        </span>
+                      <div style={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem' }}>
+                        <Clock size={14} style={{ marginRight: '0.25rem' }} /> {apt.appointmentTime}
                       </div>
                     </td>
-                    <td>{apt.reason}</td>
                     <td>
-                      <span className={`${styles.badge} ${getStatusBadgeClass(apt.status)}`}>{apt.status}</span>
+                      <span className={styles.badge}>{apt.appointmentStatus}</span>
                     </td>
                     <td>
-                      {apt.status === 'SCHEDULED' && (
-                         <button className={styles.actionBtnCancel} onClick={() => cancelAppointment(apt.id)} title="Cancel Appointment">
-                           <X size={18} />
-                         </button>
-                      )}
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        {apt.appointmentStatus === 'SCHEDULED' && (
+                          <>
+                            <button
+                              className="btn btn-outline"
+                              style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', color: '#16a34a' }}
+                              onClick={() => handleCheckIn(apt.id)}
+                            >
+                              <CheckCircle size={14} style={{ marginRight: '4px' }} /> Check In
+                            </button>
+                            <button
+                              className="btn btn-outline"
+                              style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', color: '#dc2626' }}
+                              onClick={() => handleCancel(apt.id)}
+                            >
+                              <XCircle size={14} />
+                            </button>
+                          </>
+                        )}
+
+                        {(apt.appointmentStatus === 'CHECKED_IN' || apt.appointmentStatus === 'IN_CONSULTATION') && (
+                          <button
+                            className="btn btn-primary"
+                            style={{ padding: '0.25rem 0.625rem', fontSize: '0.75rem' }}
+                            onClick={() => navigate(`/consultations/new/${apt.id}`)}
+                          >
+                            <FileText size={14} style={{ marginRight: '4px' }} /> Consult
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
