@@ -61,7 +61,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (storedToken) {
         const decoded = parseJwt(storedToken);
-        if (decoded) {
+        if (decoded && decoded.exp && Date.now() >= decoded.exp * 1000) {
+          removeStoredToken();
+          removeStoredUser();
+          setToken(null);
+          setUser(null);
+          toast.error('Session expired. Please log in again.');
+        } else if (decoded) {
           const mergedUser: User = {
             id: storedUser?.id || decoded.id || '',
             username: storedUser?.username || decoded.sub || '',

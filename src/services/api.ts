@@ -26,11 +26,15 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    const status = error.response?.status;
     const message = error.response?.data?.message || error.message || 'Something went wrong';
+    const lowerMsg = message.toLowerCase();
 
-    if (error.response?.status === 401) {
+    if (status === 401 || status === 403 || lowerMsg.includes('jwt expired') || lowerMsg.includes('expired')) {
       removeStoredToken();
       removeStoredUser();
+      localStorage.removeItem('medicore_token');
+      localStorage.removeItem('medicore_user');
       if (window.location.pathname !== '/login') {
         toast.error('Session expired. Please log in again.');
         window.location.href = '/login';
