@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
-import { apiClient } from '../../api/client';
+import { patientApi } from '../../api/patientApi';
 import styles from './PatientForm.module.css';
 
 const PatientDetails = () => {
