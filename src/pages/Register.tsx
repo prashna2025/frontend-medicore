@@ -1,116 +1,42 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import { authService } from '../services/authService';
-import Input from '../components/Input';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ShieldAlert, ArrowRight, UserCheck } from 'lucide-react';
 import Button from '../components/Button';
-import ErrorMessage from '../components/ErrorMessage';
-
-const registerSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string().min(6, 'Confirm password must be at least 6 characters'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
-
-type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export const Register: React.FC = () => {
-  const { login } = useAuth();
-  const navigate = useNavigate();
-  const [serverError, setServerError] = useState<string | null>(null);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-    },
-  });
-
-  const onSubmit = async (values: RegisterFormValues) => {
-    setServerError(null);
-    try {
-      const response = await authService.register({
-        name: values.name,
-        email: values.email,
-        password: values.password,
-        username: values.email.split('@')[0],
-      });
-      login(response.token, response.user);
-      navigate('/dashboard');
-    } catch (err: any) {
-      setServerError(err.response?.data?.message || 'Registration failed. Please try again.');
-    }
-  };
-
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-900 tracking-tight text-center">Create account</h2>
-        <p className="text-sm text-slate-500 text-center mt-1">Register to start managing healthcare tasks</p>
+      <div className="text-center">
+        <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-3">
+          <ShieldAlert size={24} />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Admin Managed Registration</h2>
+        <p className="text-sm text-slate-500 mt-1">Self-registration is disabled in MediCore Hospital Management System.</p>
       </div>
 
-      <ErrorMessage message={serverError} />
+      <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 text-sm text-slate-600">
+        <div className="flex items-start gap-3">
+          <UserCheck size={20} className="text-blue-600 shrink-0 mt-0.5" />
+          <p>
+            User accounts (Doctors, Receptionists, and Staff) are created and managed by System Administrators through the <span className="font-semibold text-slate-800">Staff & Doctor Management</span> module.
+          </p>
+        </div>
+        <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800">
+          <p className="font-semibold mb-1">Initial System Credentials:</p>
+          <p>• Super Admin Username: <code className="font-mono font-bold bg-white px-1.5 py-0.5 rounded border border-blue-200">dikshanta8080</code></p>
+          <p className="mt-0.5">• Password: <code className="font-mono font-bold bg-white px-1.5 py-0.5 rounded border border-blue-200">root</code></p>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Input
-          label="Full Name"
-          type="text"
-          placeholder="Dr. Sarah Jenkins"
-          error={errors.name?.message}
-          {...register('name')}
-        />
-
-        <Input
-          label="Email Address"
-          type="email"
-          placeholder="sarah.jenkins@medicore.com"
-          error={errors.email?.message}
-          {...register('email')}
-        />
-
-        <Input
-          label="Password"
-          type="password"
-          placeholder="••••••••"
-          error={errors.password?.message}
-          {...register('password')}
-        />
-
-        <Input
-          label="Confirm Password"
-          type="password"
-          placeholder="••••••••"
-          error={errors.confirmPassword?.message}
-          {...register('confirmPassword')}
-        />
-
-        <Button type="submit" fullWidth isLoading={isSubmitting}>
-          Create Account
+      <Link to="/login" className="block">
+        <Button type="button" fullWidth className="flex items-center justify-center gap-2">
+          <span>Go to Login Page</span>
+          <ArrowRight size={18} />
         </Button>
-      </form>
-
-      <p className="text-center text-xs text-slate-500 pt-2">
-        Already have an account?{' '}
-        <Link to="/login" className="text-blue-600 font-semibold hover:underline">
-          Log in here
-        </Link>
-      </p>
+      </Link>
     </div>
   );
 };
 
 export default Register;
+
