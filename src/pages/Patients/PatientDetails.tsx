@@ -19,24 +19,11 @@ const PatientDetails = () => {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await apiClient.get(`/patients/${id}`);
-      if (response.data && response.data.data) {
-        setPatient(response.data.data);
-      } else {
-        setPatient({
-          id,
-          fullName: 'John Doe',
-          patientNumber: `PT-100${id}`,
-          phoneNumber: '+1 234-567-8900',
-          gender: 'MALE',
-          bloodGroup: 'O+',
-          address: '123 Main St, Springfield',
-          dateOfBirth: '1985-10-15',
-        });
-      }
-    } catch (err) {
+      const data = await patientApi.getPatientById(id!);
+      setPatient(data);
+    } catch (err: any) {
       console.error(err);
-      setError('Could not fetch patient details');
+      setError(err.response?.data?.message || 'Could not fetch patient details');
     } finally {
       setIsLoading(false);
     }
@@ -45,10 +32,10 @@ const PatientDetails = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this patient?')) {
       try {
-        await apiClient.delete(`/patients/${id}`);
+        await patientApi.deletePatient(id!);
         navigate('/patients');
-      } catch (err) {
-        alert('Failed to delete patient');
+      } catch (err: any) {
+        alert(err.response?.data?.message || 'Failed to delete patient');
       }
     }
   };

@@ -2,9 +2,17 @@ import { apiClient } from './client';
 import type { ApiResponse, PagedResponse, Patient, CreatePatientRequest } from '../types';
 
 export const patientApi = {
-  getAllPatients: async (page = 0, size = 10): Promise<PagedResponse<Patient>> => {
+  getAllPatients: async (
+    page = 0, 
+    size = 10, 
+    patientNumber?: string, 
+    fullName?: string, 
+    phoneNumber?: string, 
+    gender?: string, 
+    bloodGroup?: string
+  ): Promise<PagedResponse<Patient>> => {
     const response = await apiClient.get<ApiResponse<PagedResponse<Patient>>>(`/patients`, {
-      params: { page, size }
+      params: { page, size, patientNumber, fullName, phoneNumber, gender, bloodGroup }
     });
     return response.data.data;
   },
