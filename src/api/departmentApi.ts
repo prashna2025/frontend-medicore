@@ -43,5 +43,21 @@ export const departmentApi = {
 
   deleteSpecialization: async (id: string): Promise<void> => {
     await apiClient.delete(`/specializations/${id}`);
+  },
+
+  // HOD Management
+  assignHod: async (departmentId: string, doctorId: string): Promise<any> => {
+    const response = await apiClient.post<ApiResponse<any>>(`/departments/hod`, { departmentId, doctorId });
+    return response.data.data;
+  },
+
+  replaceHod: async (departmentId: string, doctorId: string): Promise<any> => {
+    const response = await apiClient.patch<ApiResponse<any>>(`/departments/hod`, { departmentId, doctorId });
+    return response.data.data;
+  },
+
+  removeHod: async (departmentId: string): Promise<any> => {
+    const response = await apiClient.delete<ApiResponse<any>>(`/departments/hod`, { data: { departmentId } });
+    return response.data.data;
   }
 };
