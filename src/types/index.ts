@@ -84,31 +84,38 @@ export const PaymentMethod = {
 
 // Patient Models
 export interface Patient {
-  id: string;
+  id?: string;
   patientNumber: string;
-  firstName: string;
-  lastName: string;
+  fullName: string;
+  firstName?: string;
+  lastName?: string;
   dateOfBirth: string;
   gender: Gender;
   phoneNumber: string;
-  email?: string;
-  address?: string;
-  bloodGroup?: BloodGroup;
+  email: string;
+  address: string;
+  bloodGroup: BloodGroup;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  emergencyContactRelation?: string;
   allergies?: string;
   medicalHistory?: string;
 }
 
 export interface CreatePatientRequest {
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
+  patientNumber: string;
+  fullName: string;
+  address: string;
+  dateOfBirth: string; // Format: dd-MM-yyyy
   gender: Gender;
+  bloodGroup: BloodGroup;
   phoneNumber: string;
-  email?: string;
-  address?: string;
-  bloodGroup?: BloodGroup;
-  allergies?: string;
+  email: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  emergencyContactRelation: string;
   medicalHistory?: string;
+  allergies?: string;
 }
 
 // Doctor Models

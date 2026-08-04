@@ -11,14 +11,19 @@ const PatientForm = () => {
   const isEditMode = Boolean(id);
 
   const [formData, setFormData] = useState({
+    patientNumber: `PT-${Math.floor(100000 + Math.random() * 900000)}`,
     firstName: '',
     lastName: '',
+    fullName: '',
     phoneNumber: '',
     email: '',
     gender: Gender.MALE,
     bloodGroup: BloodGroup.O_POSITIVE,
     address: '',
     dateOfBirth: '',
+    emergencyContactName: '',
+    emergencyContactPhone: '',
+    emergencyContactRelation: 'Spouse',
     allergies: '',
     medicalHistory: ''
   });
@@ -37,15 +42,21 @@ const PatientForm = () => {
       setIsLoading(true);
       const patient = await patientApi.getPatientById(id!);
       if (patient) {
+        const nameParts = (patient.fullName || '').split(' ');
         setFormData({
-          firstName: patient.firstName || '',
-          lastName: patient.lastName || '',
+          patientNumber: patient.patientNumber || `PT-${Math.floor(100000 + Math.random() * 900000)}`,
+          firstName: nameParts[0] || '',
+          lastName: nameParts.slice(1).join(' ') || '',
+          fullName: patient.fullName || '',
           phoneNumber: patient.phoneNumber || '',
           email: patient.email || '',
           gender: patient.gender || Gender.MALE,
           bloodGroup: patient.bloodGroup || BloodGroup.O_POSITIVE,
           address: patient.address || '',
-          dateOfBirth: patient.dateOfBirth || '',
+          dateOfBirth: formatDateToInput(patient.dateOfBirth || ''),
+          emergencyContactName: patient.emergencyContactName || 'N/A',
+          emergencyContactPhone: patient.emergencyContactPhone || patient.phoneNumber || 'N/A',
+          emergencyContactRelation: patient.emergencyContactRelation || 'Family',
           allergies: patient.allergies || '',
           medicalHistory: patient.medicalHistory || ''
         });
@@ -58,6 +69,24 @@ const PatientForm = () => {
     }
   };
 
+  const formatDateToBackend = (dateStr: string): string => {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3 && parts[0].length === 4) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return dateStr;
+  };
+
+  const formatDateToInput = (dateStr: string): string => {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3 && parts[2].length === 4) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return dateStr;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -68,11 +97,28 @@ const PatientForm = () => {
     setIsLoading(true);
     setError(null);
 
+    const calculatedFullName = formData.fullName || `${formData.firstName} ${formData.lastName}`.trim();
+    const payload = {
+      patientNumber: formData.patientNumber,
+      fullName: calculatedFullName,
+      address: formData.address || 'N/A',
+      dateOfBirth: formatDateToBackend(formData.dateOfBirth),
+      gender: formData.gender,
+      bloodGroup: formData.bloodGroup,
+      phoneNumber: formData.phoneNumber,
+      email: formData.email,
+      emergencyContactName: formData.emergencyContactName || 'N/A',
+      emergencyContactPhone: formData.emergencyContactPhone || formData.phoneNumber || 'N/A',
+      emergencyContactRelation: formData.emergencyContactRelation || 'Family',
+      medicalHistory: formData.medicalHistory,
+      allergies: formData.allergies
+    };
+
     try {
       if (isEditMode && id) {
-        await patientApi.updatePatient(id, formData);
+        await patientApi.updatePatient(id, payload);
       } else {
-        await patientApi.createPatient(formData);
+        await patientApi.createPatient(payload);
       }
       navigate('/patients');
     } catch (err: any) {
@@ -139,26 +185,28 @@ const PatientForm = () => {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>Email Address</label>
+              <label>Email Address *</label>
               <input 
                 type="email" 
                 name="email"
                 className="input-field" 
                 value={formData.email} 
                 onChange={handleChange} 
+                required
               />
             </div>
           </div>
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Date of Birth</label>
+              <label>Date of Birth *</label>
               <input 
                 type="date" 
                 name="dateOfBirth"
                 className="input-field" 
                 value={formData.dateOfBirth} 
                 onChange={handleChange} 
+                required
               />
             </div>
             <div className={styles.formGroup}>
@@ -175,7 +223,7 @@ const PatientForm = () => {
               </select>
             </div>
             <div className={styles.formGroup}>
-              <label>Blood Group</label>
+              <label>Blood Group *</label>
               <select 
                 name="bloodGroup" 
                 className="input-field" 
@@ -190,14 +238,54 @@ const PatientForm = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Address</label>
+            <label>Address *</label>
             <textarea 
               name="address"
               className="input-field" 
               value={formData.address} 
               onChange={handleChange} 
               rows={2}
+              required
             />
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Emergency Contact Name *</label>
+              <input 
+                type="text" 
+                name="emergencyContactName"
+                className="input-field" 
+                placeholder="Contact person name"
+                value={formData.emergencyContactName} 
+                onChange={handleChange} 
+                required
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Emergency Contact Phone *</label>
+              <input 
+                type="text" 
+                name="emergencyContactPhone"
+                className="input-field" 
+                placeholder="Contact phone number"
+                value={formData.emergencyContactPhone} 
+                onChange={handleChange} 
+                required
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Relation *</label>
+              <input 
+                type="text" 
+                name="emergencyContactRelation"
+                className="input-field" 
+                placeholder="e.g. Spouse, Parent"
+                value={formData.emergencyContactRelation} 
+                onChange={handleChange} 
+                required
+              />
+            </div>
           </div>
 
           <div className={styles.formRow}>

@@ -108,7 +108,7 @@ const PatientList = () => {
                         <button className="p-1.5 text-slate-600 hover:bg-slate-50 rounded" onClick={() => navigate(`/patients/${patient.id}/edit`)} title="Edit Patient">
                           <Edit size={16} />
                         </button>
-                        <button className="p-1.5 text-red-600 hover:bg-red-50 rounded" onClick={() => handleDelete(patient.id, `${patient.firstName} ${patient.lastName}`)} title="Delete Patient">
+                        <button className="p-1.5 text-red-600 hover:bg-red-50 rounded" onClick={() => handleDelete(patient.id!, patient.fullName || `${patient.firstName || ''} ${patient.lastName || ''}`)} title="Delete Patient">
                           <Trash2 size={16} />
                         </button>
                       </div>
