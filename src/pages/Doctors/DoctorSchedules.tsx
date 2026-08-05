@@ -11,7 +11,7 @@ const DoctorSchedules = () => {
 
   const [formData, setFormData] = useState({
     doctorId: '',
-    day: Days.MONDAY,
+    dayOfWeek: Days.MONDAY,
     startTime: '09:00',
     endTime: '17:00'
   });
@@ -48,7 +48,8 @@ const DoctorSchedules = () => {
     }
     try {
       await doctorApi.createSchedule({
-        ...formData,
+        doctorId: formData.doctorId,
+        dayOfWeek: formData.dayOfWeek,
         startTime: `${formData.startTime}:00`,
         endTime: `${formData.endTime}:00`
       });
@@ -94,7 +95,7 @@ const DoctorSchedules = () => {
 
             <div className={styles.field}>
               <label>Day of Week *</label>
-              <select name="day" className={styles.select} value={formData.day} onChange={handleChange}>
+              <select name="dayOfWeek" className={styles.select} value={formData.dayOfWeek} onChange={handleChange}>
                 {Object.values(Days).map((day) => (
                   <option key={day} value={day}>{day}</option>
                 ))}

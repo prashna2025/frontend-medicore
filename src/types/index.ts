@@ -165,7 +165,7 @@ export interface DoctorSchedule {
 
 export interface CreateDoctorScheduleRequest {
   doctorId: string;
-  day: Days;
+  dayOfWeek: Days;
   startTime: string;
   endTime: string;
 }
