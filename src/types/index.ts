@@ -170,6 +170,26 @@ export interface CreateDoctorScheduleRequest {
   endTime: string;
 }
 
+export interface UpdateDoctorScheduleRequest {
+  scheduleId: string;
+  dayOfWeek?: Days;
+  startTime?: string;
+  endTime?: string;
+}
+
+export interface FilterDoctorScheduleRequest {
+  day?: Days;
+  doctorId?: string;
+  departmentId?: string;
+  specializationId?: string;
+  doctorName?: string;
+  availableAt?: string;
+  pageNo?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDirection?: string;
+}
+
 // Department & Specialization Models
 export interface Department {
   id: string;

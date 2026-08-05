@@ -6,7 +6,9 @@ import type {
   CreateDoctorRequest, 
   UpdateDoctorRequest,
   DoctorSchedule,
-  CreateDoctorScheduleRequest
+  CreateDoctorScheduleRequest,
+  UpdateDoctorScheduleRequest,
+  FilterDoctorScheduleRequest
 } from '../types';
 
 export const doctorApi = {
@@ -36,16 +38,41 @@ export const doctorApi = {
     await apiClient.delete(`/doctors/${id}`);
   },
 
-  // Schedules
-  getSchedules: async (doctorId?: string, day?: string, page = 0, size = 10): Promise<PagedResponse<DoctorSchedule>> => {
+  // Schedules API
+  getSchedules: async (
+    filter?: FilterDoctorScheduleRequest | { doctorId?: string; day?: string; page?: number; size?: number }
+  ): Promise<PagedResponse<DoctorSchedule>> => {
+    const params: Record<string, any> = {};
+    if (filter) {
+      if ('pageNo' in filter || 'pageSize' in filter) {
+        Object.assign(params, filter);
+      } else {
+        const { doctorId, day, page, size, ...rest } = filter as any;
+        if (doctorId) params.doctorId = doctorId;
+        if (day) params.day = day;
+        if (page !== undefined) params.pageNo = page;
+        if (size !== undefined) params.pageSize = size;
+        Object.assign(params, rest);
+      }
+    }
     const response = await apiClient.get<ApiResponse<PagedResponse<DoctorSchedule>>>(`/doctor-schedules`, {
-      params: { doctorId, day, page, size }
+      params
     });
+    return response.data.data;
+  },
+
+  getScheduleById: async (id: string): Promise<DoctorSchedule> => {
+    const response = await apiClient.get<ApiResponse<DoctorSchedule>>(`/doctor-schedules/${id}`);
     return response.data.data;
   },
 
   createSchedule: async (data: CreateDoctorScheduleRequest): Promise<DoctorSchedule> => {
     const response = await apiClient.post<ApiResponse<DoctorSchedule>>(`/doctor-schedules`, data);
+    return response.data.data;
+  },
+
+  updateSchedule: async (data: UpdateDoctorScheduleRequest): Promise<DoctorSchedule> => {
+    const response = await apiClient.put<ApiResponse<DoctorSchedule>>(`/doctor-schedules`, data);
     return response.data.data;
   },
 
@@ -58,3 +85,4 @@ export const doctorApi = {
     return response.data.data;
   }
 };
+
