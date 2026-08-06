@@ -202,14 +202,22 @@ export interface CreateDepartmentRequest {
   description?: string;
 }
 
+export interface UpdateDepartmentRequest {
+  departmentId: string;
+  name?: string;
+  description?: string;
+}
+
 export interface Specialization {
   id: string;
   name: string;
 }
 
+
 export interface CreateSpecializationRequest {
   name: string;
 }
+
 
 // Appointment Models
 export interface Appointment {
@@ -349,3 +357,11 @@ export interface CreateStaffRequest {
   phoneNumber: string;
   gender: Gender;
 }
+
+export interface UpdateStaffRequest {
+  staffId: string;
+  name?: string;
+  address?: string;
+  phoneNumber?: string;
+}
+

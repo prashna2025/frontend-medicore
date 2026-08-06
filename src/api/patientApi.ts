@@ -3,8 +3,8 @@ import type { ApiResponse, PagedResponse, Patient, CreatePatientRequest } from '
 
 export const patientApi = {
   getAllPatients: async (
-    page = 0, 
-    size = 10, 
+    pageNo = 0, 
+    pageSize = 10, 
     patientNumber?: string, 
     fullName?: string, 
     phoneNumber?: string, 
@@ -12,7 +12,7 @@ export const patientApi = {
     bloodGroup?: string
   ): Promise<PagedResponse<Patient>> => {
     const response = await apiClient.get<ApiResponse<PagedResponse<Patient>>>(`/patients`, {
-      params: { page, size, patientNumber, fullName, phoneNumber, gender, bloodGroup }
+      params: { pageNo, pageSize, patientNumber, fullName, phoneNumber, gender, bloodGroup }
     });
     return response.data.data;
   },

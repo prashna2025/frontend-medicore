@@ -3,13 +3,14 @@ import type {
   ApiResponse, 
   PagedResponse, 
   Staff, 
-  CreateStaffRequest
+  CreateStaffRequest,
+  UpdateStaffRequest
 } from '../types';
 
 export const staffApi = {
-  getStaffs: async (page = 0, size = 10): Promise<PagedResponse<Staff>> => {
+  getStaffs: async (pageNo = 0, pageSize = 10): Promise<PagedResponse<Staff>> => {
     const response = await apiClient.get<ApiResponse<PagedResponse<Staff>>>(`/staffs`, {
-      params: { page, size }
+      params: { pageNo, pageSize }
     });
     return response.data.data;
   },
@@ -24,8 +25,14 @@ export const staffApi = {
     return response.data.data;
   },
 
-  updateStaff: async (data: Partial<CreateStaffRequest> & { id: string }): Promise<Staff> => {
-    const response = await apiClient.put<ApiResponse<Staff>>(`/staffs`, data);
+  updateStaff: async (data: UpdateStaffRequest | ({ id: string; name?: string; address?: string; phoneNumber?: string })): Promise<Staff> => {
+    const payload = {
+      staffId: 'staffId' in data ? data.staffId : data.id,
+      name: data.name,
+      address: data.address,
+      phoneNumber: data.phoneNumber
+    };
+    const response = await apiClient.put<ApiResponse<Staff>>(`/staffs`, payload);
     return response.data.data;
   },
 

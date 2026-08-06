@@ -12,9 +12,9 @@ import type {
 } from '../types';
 
 export const doctorApi = {
-  getDoctors: async (page = 0, size = 10, departmentId?: string, specializationId?: string): Promise<PagedResponse<Doctor>> => {
+  getDoctors: async (pageNo = 0, pageSize = 10, departmentId?: string, specializationId?: string, searchKeyword?: string): Promise<PagedResponse<Doctor>> => {
     const response = await apiClient.get<ApiResponse<PagedResponse<Doctor>>>(`/doctors`, {
-      params: { page, size, departmentId, specializationId }
+      params: { pageNo, pageSize, departmentId, specializationId, searchKeyword }
     });
     return response.data.data;
   },
