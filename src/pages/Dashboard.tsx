@@ -1,144 +1,151 @@
 import React from "react";
-import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import {
   Users, Stethoscope, Calendar, CreditCard,
   Building2, UserCheck, FileText, Activity,
-  TrendingUp, CheckCircle2, Clock, Shield
+  CheckCircle2, Clock, Plus, TrendingUp
 } from "lucide-react";
 
-const statCards = [
-  { label: "Total Patients",    icon: Users,        color: "#3b82f6", bg: "rgba(59,130,246,0.15)",   link: "/patients" },
-  { label: "Doctors",          icon: Stethoscope,  color: "#8b5cf6", bg: "rgba(139,92,246,0.15)",   link: "/doctors" },
-  { label: "Appointments",     icon: Calendar,     color: "#06b6d4", bg: "rgba(6,182,212,0.15)",    link: "/appointments" },
-  { label: "Billing & Invoices",icon: CreditCard,  color: "#10b981", bg: "rgba(16,185,129,0.15)",   link: "/billing" },
-  { label: "Departments",      icon: Building2,    color: "#f59e0b", bg: "rgba(245,158,11,0.15)",   link: "/departments" },
-  { label: "Staff",            icon: UserCheck,    color: "#f43f5e", bg: "rgba(244,63,94,0.15)",    link: "/staff" },
-  { label: "Consultations",    icon: FileText,     color: "#a78bfa", bg: "rgba(167,139,250,0.15)",  link: "/consultations" },
-  { label: "System Status",    icon: Activity,     color: "#34d399", bg: "rgba(52,211,153,0.15)",   link: "/dashboard" },
-];
+const roleModules: Record<string, { label: string; icon: React.ElementType; path: string; color: string; bg: string }[]> = {
+  default: [
+    { label: "Patients",      icon: Users,       path: "/patients",      color: "#0891b2", bg: "#cffafe" },
+    { label: "Doctors",       icon: Stethoscope, path: "/doctors",       color: "#7c3aed", bg: "#ede9fe" },
+    { label: "Appointments",  icon: Calendar,    path: "/appointments",  color: "#d97706", bg: "#fef3c7" },
+    { label: "Consultations", icon: FileText,    path: "/consultations", color: "#16a34a", bg: "#dcfce7" },
+    { label: "Billing",       icon: CreditCard,  path: "/billing",       color: "#2563eb", bg: "#dbeafe" },
+    { label: "Departments",   icon: Building2,   path: "/departments",   color: "#0891b2", bg: "#cffafe" },
+    { label: "Staff",         icon: UserCheck,   path: "/staff",         color: "#dc2626", bg: "#fee2e2" },
+    { label: "Activity",      icon: Activity,    path: "/dashboard",     color: "#475569", bg: "#f1f5f9" },
+  ]
+};
 
-const quickLinks = [
-  { label: "New Appointment",  icon: Calendar,    link: "/appointments/new",  color: "#3b82f6" },
-  { label: "New Patient",      icon: Users,       link: "/patients/new",      color: "#8b5cf6" },
-  { label: "Generate Invoice", icon: CreditCard,  link: "/billing/new",       color: "#10b981" },
-  { label: "New Consultation", icon: FileText,    link: "/consultations/new", color: "#f59e0b" },
+const quickActions = [
+  { label: "New Appointment",  icon: Calendar,    path: "/appointments/new",  color: "#0891b2" },
+  { label: "Add Patient",      icon: Users,       path: "/patients/new",      color: "#7c3aed" },
+  { label: "Generate Invoice", icon: CreditCard,  path: "/billing/new",       color: "#16a34a" },
+  { label: "New Consultation", icon: FileText,    path: "/consultations/new", color: "#d97706" },
 ];
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const modules = roleModules.default;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
 
-      {/* Hero welcome section */}
+      {/* Welcome banner */}
       <div style={{
-        background: "linear-gradient(135deg, rgba(59,130,246,0.18) 0%, rgba(139,92,246,0.18) 100%)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        borderRadius: "1.25rem",
-        padding: "2rem",
-        backdropFilter: "blur(12px)",
-        position: "relative",
-        overflow: "hidden"
+        background: "#fff",
+        border: "1px solid #e2e8f0",
+        borderLeft: "4px solid #0891b2",
+        borderRadius: "10px",
+        padding: "1.25rem 1.5rem",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: "1rem",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.06)"
       }}>
-        <div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%)" }} />
-        <div style={{ position: "relative" }}>
-          <p style={{ color: "#94a3b8", fontSize: "0.875rem", marginBottom: "0.25rem" }}>{greeting} ??</p>
-          <h1 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "clamp(1.5rem, 4vw, 2.25rem)", fontWeight: 800, color: "#f8fafc", letterSpacing: "-0.03em", marginBottom: "0.5rem" }}>
-            Welcome back, {user?.name || "User"}!
+        <div>
+          <p style={{ fontSize: "0.8125rem", color: "#94a3b8", marginBottom: "0.2rem" }}>{greeting} ??</p>
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>
+            Welcome back, {user?.name || "User"}
           </h1>
-          <p style={{ color: "#94a3b8", fontSize: "0.9rem" }}>
-            Here's your hospital management overview for today.
+          <p style={{ fontSize: "0.875rem", color: "#64748b", marginTop: "0.25rem" }}>
+            {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
           </p>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "1rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", background: "rgba(16,185,129,0.15)", border: "1px solid rgba(16,185,129,0.3)", borderRadius: 999, padding: "4px 12px" }}>
-              <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#34d399", animation: "pulse 2s infinite" }} />
-              <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "#34d399" }}>System Online</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 999, padding: "4px 12px" }}>
-              <Shield size={12} color="#a78bfa" />
-              <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "#a78bfa" }}>{(user?.role || "USER").replace(/_/g, " ")}</span>
-            </div>
-          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", padding: "4px 12px", background: "#f0fdff", border: "1px solid #a5f3fc", borderRadius: 999, fontSize: "0.75rem", fontWeight: 700, color: "#0e7490" }}>
+            <TrendingUp size={12} /> {(user?.role || "USER").replace(/_/g, " ")}
+          </span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", padding: "4px 12px", background: "#dcfce7", border: "1px solid #86efac", borderRadius: 999, fontSize: "0.75rem", fontWeight: 700, color: "#15803d" }}>
+            <CheckCircle2 size={12} /> System Online
+          </span>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div>
-        <h2 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "1rem", fontWeight: 700, color: "#cbd5e1", marginBottom: "0.75rem", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+      <section>
+        <h2 style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.75rem" }}>
           Quick Actions
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "0.75rem" }}>
-          {quickLinks.map(q => {
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "0.75rem" }}>
+          {quickActions.map(q => {
             const Icon = q.icon;
             return (
-              <Link key={q.link} to={q.link} style={{
-                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                gap: "0.625rem", padding: "1.25rem 1rem",
-                background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)",
-                border: "1px solid rgba(255,255,255,0.1)", borderRadius: "1rem",
-                color: "white", textDecoration: "none", textAlign: "center",
-                transition: "all 0.2s", cursor: "pointer"
+              <Link key={q.path} to={q.path} style={{
+                display: "flex", alignItems: "center", gap: "0.75rem",
+                padding: "0.875rem 1rem",
+                background: "#fff", border: "1px solid #e2e8f0",
+                borderRadius: 10, textDecoration: "none",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+                transition: "border-color 150ms, box-shadow 150ms"
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.1)"; (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = q.color; (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 12px rgba(0,0,0,0.08)`; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "#e2e8f0"; (e.currentTarget as HTMLElement).style.boxShadow = "0 1px 3px rgba(0,0,0,0.05)"; }}
               >
-                <div style={{ width: 44, height: 44, borderRadius: "0.75rem", background: `${q.color}22`, border: `1px solid ${q.color}44`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Icon size={22} color={q.color} />
+                <div style={{ width: 36, height: 36, borderRadius: 8, background: "#f8fafc", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Icon size={18} color={q.color} />
                 </div>
-                <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "#e2e8f0" }}>{q.label}</span>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    <Plus size={11} color={q.color} />
+                    <span style={{ fontSize: "0.8125rem", fontWeight: 600, color: "#0f172a" }}>{q.label}</span>
+                  </div>
+                </div>
               </Link>
             );
           })}
         </div>
-      </div>
+      </section>
 
-      {/* Navigation tiles */}
-      <div>
-        <h2 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "1rem", fontWeight: 700, color: "#cbd5e1", marginBottom: "0.75rem", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+      {/* Module Overview */}
+      <section>
+        <h2 style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.75rem" }}>
           Modules
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem" }}>
-          {statCards.map(s => {
-            const Icon = s.icon;
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "0.875rem" }}>
+          {modules.map(m => {
+            const Icon = m.icon;
             return (
-              <Link key={s.link} to={s.link} style={{
+              <Link key={m.path} to={m.path} style={{
                 display: "flex", alignItems: "center", gap: "1rem",
-                padding: "1.25rem",
-                background: "rgba(255,255,255,0.06)", backdropFilter: "blur(12px)",
-                border: "1px solid rgba(255,255,255,0.1)", borderRadius: "1rem",
-                textDecoration: "none", transition: "all 0.2s"
+                padding: "1rem 1.125rem",
+                background: "#fff", border: "1px solid #e2e8f0",
+                borderRadius: 10, textDecoration: "none",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+                transition: "border-color 150ms, box-shadow 150ms"
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = s.bg; (e.currentTarget as HTMLElement).style.borderColor = `${s.color}44`; (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.1)"; (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = m.color; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "#e2e8f0"; (e.currentTarget as HTMLElement).style.boxShadow = "0 1px 3px rgba(0,0,0,0.05)"; }}
               >
-                <div style={{ width: 42, height: 42, borderRadius: "0.75rem", background: s.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <Icon size={20} color={s.color} />
+                <div style={{ width: 40, height: 40, borderRadius: 8, background: m.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Icon size={20} color={m.color} />
                 </div>
-                <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "#e2e8f0" }}>{s.label}</span>
+                <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "#0f172a" }}>{m.label}</span>
               </Link>
             );
           })}
         </div>
-      </div>
+      </section>
 
-      {/* System info */}
+      {/* System status */}
       <div style={{
-        display: "flex", alignItems: "center", gap: "0.75rem",
-        padding: "1rem 1.25rem",
-        background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)",
-        borderRadius: "0.875rem", backdropFilter: "blur(8px)"
+        display: "flex", alignItems: "center", gap: "0.625rem",
+        padding: "0.75rem 1rem",
+        background: "#f0fdf4", border: "1px solid #bbf7d0",
+        borderRadius: 8, fontSize: "0.8125rem", color: "#15803d"
       }}>
-        <CheckCircle2 size={18} color="#34d399" />
-        <span style={{ fontSize: "0.875rem", color: "#86efac" }}>
-          Backend API connected — JWT session active. All services operational.
+        <CheckCircle2 size={16} />
+        <span>Backend API connected — JWT session active. All 51 endpoints operational.</span>
+        <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.375rem", color: "#94a3b8", fontSize: "0.75rem" }}>
+          <Clock size={13} /> {new Date().toLocaleTimeString()}
         </span>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.375rem", color: "#94a3b8", fontSize: "0.75rem" }}>
-          <Clock size={13} />
-          {new Date().toLocaleTimeString()}
-        </div>
       </div>
     </div>
   );

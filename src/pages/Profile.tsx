@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { userService } from "../services/userService";
-import { User, Mail, Shield, Save, CheckCircle } from "lucide-react";
+import { User, Mail, Shield, Save, CheckCircle, AlertCircle } from "lucide-react";
 
-const inputStyle: React.CSSProperties = {
-  width: "100%", padding: "0.7rem 0.875rem",
-  background: "rgba(255,255,255,0.07)",
-  border: "1px solid rgba(255,255,255,0.14)",
-  borderRadius: "0.625rem",
-  color: "#f1f5f9", fontSize: "0.9rem",
-  outline: "none", fontFamily: "inherit",
-  transition: "border-color 0.2s, box-shadow 0.2s"
+const fieldStyle: React.CSSProperties = { display: "flex", flexDirection: "column", gap: "0.3rem" };
+const labelStyle: React.CSSProperties = { fontSize: "0.8125rem", fontWeight: 600, color: "#475569", display: "flex", alignItems: "center", gap: "0.375rem" };
+const inp: React.CSSProperties = {
+  padding: "0.6rem 0.75rem", background: "#fff",
+  border: "1px solid #cbd5e1", borderRadius: 8,
+  fontSize: "0.875rem", color: "#0f172a", outline: "none",
+  fontFamily: "Inter, sans-serif", width: "100%",
+  transition: "border-color 150ms, box-shadow 150ms"
 };
+const onFocus = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = "#0891b2"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(8,145,178,0.10)"; };
+const onBlur = (e: React.FocusEvent<HTMLInputElement>) => { e.currentTarget.style.borderColor = "#cbd5e1"; e.currentTarget.style.boxShadow = "none"; };
 
 export const Profile: React.FC = () => {
   const { user, updateUser } = useAuth();
@@ -21,6 +23,7 @@ export const Profile: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /* ---- handleSubmit logic UNCHANGED ---- */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -38,120 +41,69 @@ export const Profile: React.FC = () => {
     }
   };
 
-  const onFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.currentTarget.style.borderColor = "rgba(99,102,241,0.6)";
-    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.15)";
-  };
-  const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.currentTarget.style.borderColor = "rgba(255,255,255,0.14)";
-    e.currentTarget.style.boxShadow = "none";
-  };
+  const initials = user?.name?.split(" ").map((n: string) => n[0]).slice(0, 2).join("").toUpperCase() || "U";
 
   return (
-    <div style={{ maxWidth: 680, margin: "0 auto", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+    <div style={{ maxWidth: 640, display: "flex", flexDirection: "column", gap: "1.5rem" }}>
       {/* Header */}
       <div>
-        <h1 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "1.75rem", fontWeight: 800, color: "#f8fafc", letterSpacing: "-0.02em" }}>
-          Profile Settings
-        </h1>
-        <p style={{ color: "#94a3b8", fontSize: "0.9rem", marginTop: "0.25rem" }}>
-          Manage your personal account information
-        </p>
+        <h1 style={{ fontSize: "1.375rem", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>Profile Settings</h1>
+        <p style={{ fontSize: "0.875rem", color: "#64748b", marginTop: "0.2rem" }}>Manage your account information</p>
       </div>
 
-      {/* Avatar + Role card */}
-      <div style={{
-        background: "rgba(255,255,255,0.07)", backdropFilter: "blur(16px)",
-        border: "1px solid rgba(255,255,255,0.11)", borderRadius: "1rem", padding: "1.5rem",
-        display: "flex", alignItems: "center", gap: "1.25rem"
-      }}>
-        <div style={{
-          width: 72, height: 72, borderRadius: "50%",
-          background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: "1.75rem", fontWeight: 800, color: "white",
-          boxShadow: "0 8px 20px rgba(59,130,246,0.35)", flexShrink: 0
-        }}>
-          {user?.name?.[0]?.toUpperCase() || "U"}
+      {/* User card */}
+      <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 12, padding: "1.25rem 1.5rem", display: "flex", alignItems: "center", gap: "1.125rem", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+        <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#cffafe", color: "#0e7490", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "1.25rem", flexShrink: 0, border: "2px solid #a5f3fc" }}>
+          {initials}
         </div>
         <div>
-          <p style={{ fontSize: "1.125rem", fontWeight: 700, color: "#f8fafc" }}>{user?.name || "Unknown User"}</p>
-          <p style={{ fontSize: "0.875rem", color: "#94a3b8" }}>{user?.email}</p>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", marginTop: "0.375rem", background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 999, padding: "3px 10px" }}>
-            <Shield size={12} color="#a78bfa" />
-            <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#a78bfa" }}>{(user?.role || "USER").replace(/_/g, " ")}</span>
-          </div>
+          <p style={{ fontSize: "1.0625rem", fontWeight: 700, color: "#0f172a" }}>{user?.name || "—"}</p>
+          <p style={{ fontSize: "0.8125rem", color: "#64748b" }}>{user?.email}</p>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem", marginTop: "0.3rem", padding: "2px 10px", background: "#f0fdff", border: "1px solid #a5f3fc", borderRadius: 999, fontSize: "0.7rem", fontWeight: 700, color: "#0e7490" }}>
+            <Shield size={11} /> {(user?.role || "USER").replace(/_/g, " ")}
+          </span>
         </div>
       </div>
 
       {/* Edit form */}
-      <div style={{
-        background: "rgba(255,255,255,0.07)", backdropFilter: "blur(16px)",
-        border: "1px solid rgba(255,255,255,0.11)", borderRadius: "1rem", padding: "1.75rem"
-      }}>
-        <h2 style={{ fontSize: "1rem", fontWeight: 700, color: "#e2e8f0", marginBottom: "1.25rem" }}>Edit Information</h2>
-
-        {error && (
-          <div style={{ padding: "0.75rem 1rem", background: "rgba(244,63,94,0.12)", border: "1px solid rgba(244,63,94,0.3)", borderRadius: "0.625rem", color: "#fb7185", fontSize: "0.875rem", marginBottom: "1rem" }}>
-            {error}
-          </div>
-        )}
-
-        {success && (
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem 1rem", background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.3)", borderRadius: "0.625rem", color: "#34d399", fontSize: "0.875rem", marginBottom: "1rem" }}>
-            <CheckCircle size={16} /> Profile updated successfully!
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.125rem" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
-            <label style={{ fontSize: "0.8125rem", fontWeight: 600, color: "#cbd5e1", display: "flex", alignItems: "center", gap: "0.375rem" }}>
-              <User size={14} /> Full Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Enter your full name"
-              style={inputStyle}
-              onFocus={onFocus}
-              onBlur={onBlur}
-              required
-            />
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
-            <label style={{ fontSize: "0.8125rem", fontWeight: 600, color: "#cbd5e1", display: "flex", alignItems: "center", gap: "0.375rem" }}>
-              <Mail size={14} /> Email Address
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              style={inputStyle}
-              onFocus={onFocus}
-              onBlur={onBlur}
-              required
-            />
-          </div>
-
-          <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: "0.5rem" }}>
-            <button type="submit" disabled={loading} style={{
-              display: "flex", alignItems: "center", gap: "0.5rem",
-              padding: "0.625rem 1.5rem", borderRadius: "0.625rem",
-              background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
-              color: "white", fontWeight: 700, fontSize: "0.9rem", border: "none",
-              cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.7 : 1,
-              boxShadow: "0 4px 14px rgba(59,130,246,0.35)",
-              transition: "all 0.2s"
-            }}>
-              <Save size={16} />
-              {loading ? "Saving..." : "Save Changes"}
-            </button>
-          </div>
-        </form>
+      <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+        <div style={{ padding: "0.75rem 1.5rem", background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
+          <p style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em" }}>Edit Information</p>
+        </div>
+        <div style={{ padding: "1.5rem" }}>
+          {error && (
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.7rem 0.875rem", background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 8, color: "#991b1b", fontSize: "0.875rem", marginBottom: "1rem" }}>
+              <AlertCircle size={16} /> {error}
+            </div>
+          )}
+          {success && (
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.7rem 0.875rem", background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 8, color: "#15803d", fontSize: "0.875rem", marginBottom: "1rem" }}>
+              <CheckCircle size={16} /> Profile updated successfully!
+            </div>
+          )}
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.125rem" }}>
+            <div style={fieldStyle}>
+              <label style={labelStyle}><User size={13} /> Full Name</label>
+              <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Your full name" style={inp} onFocus={onFocus} onBlur={onBlur} required />
+            </div>
+            <div style={fieldStyle}>
+              <label style={labelStyle}><Mail size={13} /> Email Address</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" style={inp} onFocus={onFocus} onBlur={onBlur} required />
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: "0.5rem" }}>
+              <button type="submit" disabled={loading} style={{
+                display: "flex", alignItems: "center", gap: "0.5rem",
+                padding: "0.6rem 1.375rem", borderRadius: 8,
+                background: "#0891b2", color: "#fff",
+                fontWeight: 700, fontSize: "0.875rem", border: "none",
+                cursor: loading ? "not-allowed" : "pointer",
+                opacity: loading ? 0.65 : 1, transition: "background 150ms"
+              }}>
+                <Save size={15} /> {loading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

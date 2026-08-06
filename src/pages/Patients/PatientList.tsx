@@ -101,14 +101,14 @@ const PatientList = () => {
                     </td>
                     <td>{patient.bloodGroup ? patient.bloodGroup.replace('_', ' ') : 'N/A'}</td>
                     <td>
-                      <div className="flex items-center gap-2">
-                        <button className="p-1.5 text-blue-600 hover:bg-blue-50 rounded" onClick={() => navigate(`/patients/${patient.id}`)} title="View Details">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <button className="btn-icon primary" onClick={() => navigate(`/patients/${patient.id}`)} title="View Details">
                           <Eye size={16} />
                         </button>
-                        <button className="p-1.5 text-slate-600 hover:bg-slate-50 rounded" onClick={() => navigate(`/patients/${patient.id}/edit`)} title="Edit Patient">
+                        <button className="btn-icon" onClick={() => navigate(`/patients/${patient.id}/edit`)} title="Edit Patient">
                           <Edit size={16} />
                         </button>
-                        <button className="p-1.5 text-red-600 hover:bg-red-50 rounded" onClick={() => handleDelete(patient.id!, patient.fullName || `${patient.firstName || ''} ${patient.lastName || ''}`)} title="Delete Patient">
+                        <button className="btn-icon danger" onClick={() => handleDelete(patient.id!, patient.fullName || `${patient.firstName || ''} ${patient.lastName || ''}`)} title="Delete Patient">
                           <Trash2 size={16} />
                         </button>
                       </div>
