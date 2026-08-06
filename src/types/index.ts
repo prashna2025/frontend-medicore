@@ -149,6 +149,7 @@ export interface CreateDoctorRequest {
 
 export interface UpdateDoctorRequest extends Partial<CreateDoctorRequest> {
   id: string;
+  doctorId?: string;
 }
 
 // Schedule Models
