@@ -31,7 +31,7 @@ const DoctorSchedules = () => {
 
       const [schedRes, docRes] = await Promise.all([
         doctorApi.getSchedules(filterParams),
-        doctorApi.getDoctors()
+        doctorApi.getDoctors(0, 100)
       ]);
       setSchedules(schedRes.content || []);
       setDoctors(docRes.content || []);
