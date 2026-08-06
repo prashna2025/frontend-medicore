@@ -32,12 +32,21 @@ const DoctorForm = () => {
     const loadMetadataAndDoctor = async () => {
       try {
         setLoading(true);
-        const [deptRes, specRes] = await Promise.all([
-          departmentApi.getDepartments(),
-          departmentApi.getSpecializations()
-        ]);
-        setDepartments(deptRes.content || []);
-        setSpecializations(specRes || []);
+        try {
+          const deptRes = await departmentApi.getDepartments(0, 100);
+          setDepartments(Array.isArray(deptRes) ? deptRes : (deptRes?.content || []));
+        } catch (err) {
+          console.error('Failed to load departments:', err);
+          setDepartments([]);
+        }
+
+        try {
+          const specRes = await departmentApi.getSpecializations();
+          setSpecializations(Array.isArray(specRes) ? specRes : []);
+        } catch (err) {
+          console.error('Failed to load specializations:', err);
+          setSpecializations([]);
+        }
 
         if (id) {
           const doctor = await doctorApi.getDoctorById(id);
