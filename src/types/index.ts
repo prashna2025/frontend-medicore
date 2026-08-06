@@ -57,13 +57,16 @@ export const Days = {
   SUNDAY: 'SUNDAY' as Days
 } as const;
 
-export type AppointmentStatus = 'SCHEDULED' | 'CHECKED_IN' | 'IN_CONSULTATION' | 'COMPLETED' | 'CANCELLED';
+export type AppointmentStatus = 'SCHEDULED' | 'CHECKED_IN' | 'IN_CONSULTATION' | 'COMPLETED' | 'CANCELLED' | 'BOOKED' | 'CONSULTING' | 'NO_SHOW';
 export const AppointmentStatus = {
   SCHEDULED: 'SCHEDULED' as AppointmentStatus,
   CHECKED_IN: 'CHECKED_IN' as AppointmentStatus,
   IN_CONSULTATION: 'IN_CONSULTATION' as AppointmentStatus,
   COMPLETED: 'COMPLETED' as AppointmentStatus,
-  CANCELLED: 'CANCELLED' as AppointmentStatus
+  CANCELLED: 'CANCELLED' as AppointmentStatus,
+  BOOKED: 'BOOKED' as AppointmentStatus,
+  CONSULTING: 'CONSULTING' as AppointmentStatus,
+  NO_SHOW: 'NO_SHOW' as AppointmentStatus
 } as const;
 
 export type InvoiceStatus = 'PENDING' | 'PARTIALLY_PAID' | 'PAID' | 'CANCELLED';

@@ -6,22 +6,30 @@ import type {
   RescheduleAppointmentRequest
 } from '../types';
 
+const unwrapData = <T>(response: { data?: ApiResponse<T> | T }): T => {
+  const payload = response.data;
+  if (payload && typeof payload === 'object' && 'data' in payload) {
+    return (payload as ApiResponse<T>).data as T;
+  }
+  return payload as T;
+};
+
 export const appointmentApi = {
   getTodayAppointments: async (): Promise<Appointment[]> => {
-    const response = await apiClient.get<ApiResponse<Appointment[]>>(`/v1/appointments/today`);
-    return response.data.data;
+    const response = await apiClient.get<ApiResponse<Appointment[]> | Appointment[]>(`/v1/appointments/today`);
+    return unwrapData<Appointment[]>(response) || [];
   },
 
   getAllAppointments: async (): Promise<Appointment[]> => {
-    const response = await apiClient.get<ApiResponse<Appointment[]>>(`/v1/appointments`);
-    return response.data.data;
+    const response = await apiClient.get<ApiResponse<Appointment[]> | Appointment[]>(`/v1/appointments`);
+    return unwrapData<Appointment[]>(response) || [];
   },
 
   getAppointmentsByDate: async (date?: string): Promise<Appointment[]> => {
-    const response = await apiClient.get<ApiResponse<Appointment[]>>(`/v1/appointments`, {
+    const response = await apiClient.get<ApiResponse<Appointment[]> | Appointment[]>(`/v1/appointments`, {
       params: date ? { date } : {}
     });
-    return response.data.data;
+    return unwrapData<Appointment[]>(response) || [];
   },
 
   getAppointmentById: async (id: string): Promise<Appointment> => {

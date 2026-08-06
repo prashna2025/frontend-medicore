@@ -147,21 +147,22 @@ const DoctorList = () => {
                   </div>
                 </div>
 
-              <div className={styles.cardFooter}>
-                <div className={styles.fee}>
-                  <DollarSign size={16} style={{ display: 'inline' }} />
-                  {doctor.consultationFee ? `$${doctor.consultationFee}` : '$50'}
-                </div>
-                {doctor.id && (
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <Link to={`/doctors/${doctor.id}/edit`} className={styles.secondaryBtn} style={{ color: '#2563eb' }} title="Edit Doctor">
-                      <Edit2 size={16} />
-                    </Link>
-                    <button onClick={() => handleDelete(doctor.id!)} className={styles.secondaryBtn} style={{ color: '#ef4444' }} title="Delete Doctor">
-                      <Trash2 size={16} />
-                    </button>
+                <div className={styles.cardFooter}>
+                  <div className={styles.fee}>
+                    <DollarSign size={16} style={{ display: 'inline' }} />
+                    {doctor.consultationFee ? `$${doctor.consultationFee}` : '$50'}
                   </div>
-                )}
+                  {doctor.id && (
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <Link to={`/doctors/${doctor.id}/edit`} className={styles.secondaryBtn} style={{ color: '#2563eb' }} title="Edit Doctor">
+                        <Edit2 size={16} />
+                      </Link>
+                      <button onClick={() => handleDelete(doctor.id!)} className={styles.secondaryBtn} style={{ color: '#ef4444' }} title="Delete Doctor">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search, Plus, Clock, User, CheckCircle, Trash2, FileText, Calendar, Edit, X } from 'lucide-react';
 import { appointmentApi } from '../../api/appointmentApi';
 import { useNavigate } from 'react-router-dom';
-import type { Appointment } from '../../types';
+import type { Appointment, AppointmentStatus } from '../../types';
 import toast from 'react-hot-toast';
 import styles from './AppointmentList.module.css';
 
@@ -20,6 +20,35 @@ const AppointmentList = () => {
 
   const navigate = useNavigate();
 
+  const normalizeAppointmentStatus = (status?: string): AppointmentStatus => {
+    switch (status?.toUpperCase()) {
+      case 'BOOKED':
+      case 'SCHEDULED':
+        return 'SCHEDULED';
+      case 'CHECKED_IN':
+        return 'CHECKED_IN';
+      case 'CONSULTING':
+      case 'IN_CONSULTATION':
+        return 'IN_CONSULTATION';
+      case 'COMPLETED':
+        return 'COMPLETED';
+      case 'CANCELLED':
+        return 'CANCELLED';
+      case 'NO_SHOW':
+        return 'NO_SHOW';
+      default:
+        return 'SCHEDULED';
+    }
+  };
+
+  const normalizeAppointments = (items: Appointment[] = []): Appointment[] =>
+    items.map((apt) => ({
+      ...apt,
+      appointmentStatus: normalizeAppointmentStatus(apt.appointmentStatus),
+      appointmentDate: apt.appointmentDate || selectedDate,
+      appointmentTime: apt.appointmentTime || '00:00'
+    }));
+
   useEffect(() => {
     fetchAppointments();
   }, [selectedDate, viewMode]);
@@ -35,7 +64,7 @@ const AppointmentList = () => {
       } else {
         res = await appointmentApi.getAllAppointments();
       }
-      setAppointments(res || []);
+      setAppointments(normalizeAppointments(res || []));
     } catch (error) {
       console.error('Failed to fetch appointments', error);
       setAppointments([]);
