@@ -14,7 +14,7 @@ const DoctorList = () => {
     try {
       setLoading(true);
       const res = await doctorApi.getDoctors(0, 100);
-      setDoctors(res.content || []);
+      setDoctors(Array.isArray(res) ? res : (res?.content || []));
     } catch (err) {
       console.error('Failed to load doctors:', err);
     } finally {

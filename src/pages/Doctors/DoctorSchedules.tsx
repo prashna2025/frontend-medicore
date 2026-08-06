@@ -29,14 +29,23 @@ const DoctorSchedules = () => {
       if (filterDoctorId) filterParams.doctorId = filterDoctorId;
       if (filterDay) filterParams.day = filterDay;
 
-      const [schedRes, docRes] = await Promise.all([
-        doctorApi.getSchedules(filterParams),
-        doctorApi.getDoctors(0, 100)
-      ]);
-      setSchedules(schedRes.content || []);
-      setDoctors(docRes.content || []);
-    } catch (err) {
-      console.error('Failed to load schedules:', err);
+      try {
+        const schedRes = await doctorApi.getSchedules(filterParams);
+        const schedList = Array.isArray(schedRes) ? schedRes : (schedRes?.content || []);
+        setSchedules(schedList);
+      } catch (err) {
+        console.error('Failed to load schedules:', err);
+        setSchedules([]);
+      }
+
+      try {
+        const docRes = await doctorApi.getDoctors(0, 100);
+        const docList = Array.isArray(docRes) ? docRes : (docRes?.content || []);
+        setDoctors(docList);
+      } catch (err) {
+        console.error('Failed to load doctors list:', err);
+        setDoctors([]);
+      }
     } finally {
       setLoading(false);
     }

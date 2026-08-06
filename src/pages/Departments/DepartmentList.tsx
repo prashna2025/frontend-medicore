@@ -24,16 +24,27 @@ const DepartmentList = () => {
 
   const fetchData = async () => {
     try {
-      const [dRes, sRes, docRes] = await Promise.all([
-        departmentApi.getDepartments(),
-        departmentApi.getSpecializations(),
-        doctorApi.getDoctors()
-      ]);
-      setDepartments(dRes.content || []);
-      setSpecializations(sRes || []);
-      setDoctors(docRes.content || []);
+      const dRes = await departmentApi.getDepartments(0, 100);
+      setDepartments(Array.isArray(dRes) ? dRes : (dRes?.content || []));
     } catch (err) {
-      console.error('Failed to fetch data:', err);
+      console.error('Failed to fetch departments:', err);
+      setDepartments([]);
+    }
+
+    try {
+      const sRes = await departmentApi.getSpecializations();
+      setSpecializations(Array.isArray(sRes) ? sRes : []);
+    } catch (err) {
+      console.error('Failed to fetch specializations:', err);
+      setSpecializations([]);
+    }
+
+    try {
+      const docRes = await doctorApi.getDoctors(0, 100);
+      setDoctors(Array.isArray(docRes) ? docRes : (docRes?.content || []));
+    } catch (err) {
+      console.error('Failed to fetch doctors:', err);
+      setDoctors([]);
     }
   };
 

@@ -29,16 +29,27 @@ const AppointmentForm = () => {
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const [patRes, docRes, deptRes] = await Promise.all([
-          patientApi.getAllPatients(0, 100),
-          doctorApi.getDoctors(0, 100),
-          departmentApi.getDepartments(0, 100)
-        ]);
-        setPatients(patRes.content || []);
-        setDoctors(docRes.content || []);
-        setDepartments(deptRes.content || []);
+        const patRes = await patientApi.getAllPatients(0, 100);
+        setPatients(Array.isArray(patRes) ? patRes : (patRes?.content || []));
       } catch (err) {
-        console.error('Failed to load form options', err);
+        console.error('Failed to load patients', err);
+        setPatients([]);
+      }
+
+      try {
+        const docRes = await doctorApi.getDoctors(0, 100);
+        setDoctors(Array.isArray(docRes) ? docRes : (docRes?.content || []));
+      } catch (err) {
+        console.error('Failed to load doctors', err);
+        setDoctors([]);
+      }
+
+      try {
+        const deptRes = await departmentApi.getDepartments(0, 100);
+        setDepartments(Array.isArray(deptRes) ? deptRes : (deptRes?.content || []));
+      } catch (err) {
+        console.error('Failed to load departments', err);
+        setDepartments([]);
       }
     };
     fetchOptions();
