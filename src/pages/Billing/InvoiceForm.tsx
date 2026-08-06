@@ -51,15 +51,26 @@ const InvoiceForm = () => {
     }
     try {
       setLoading(true);
+      const subTotal = calculateSubtotal();
+      const taxable = Math.max(0, subTotal - Number(discountAmount));
+      const taxPct = taxable > 0 ? (Number(taxAmount) / taxable) * 100 : 0;
+
+      const formattedItems = items.map(item => ({
+        ...item,
+        itemType: item.description.toLowerCase().includes('consult') ? 'DOCTOR_FEE' : 
+                  item.description.toLowerCase().includes('lab') || item.description.toLowerCase().includes('test') ? 'LAB_TEST' :
+                  item.description.toLowerCase().includes('med') ? 'MEDICINE' : 'PROCEDURE'
+      }));
+
       const res = await billingApi.createInvoice({
         patientId,
-        items,
+        items: formattedItems,
         discountAmount: Number(discountAmount),
-        taxAmount: Number(taxAmount)
+        taxPercentage: Number(taxPct)
       });
       navigate(`/billing/${res.id}`);
-    } catch (err) {
-      alert('Failed to generate invoice');
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to generate invoice');
     } finally {
       setLoading(false);
     }
@@ -99,7 +110,25 @@ const InvoiceForm = () => {
             </select>
           </div>
 
-          <h3 style={{ fontSize: '1.125rem', marginBottom: '1rem' }}>Billable Items</h3>
+          <h3 style={{ fontSize: '1.125rem', marginBottom: '0.75rem' }}>Billable Items</h3>
+
+          {/* Table Headers for Item Description, Unit/Qty, Unit Price */}
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: '2fr 1fr 1fr 40px', 
+            gap: '0.75rem', 
+            marginBottom: '0.5rem', 
+            fontWeight: 600, 
+            fontSize: '0.85rem', 
+            color: '#475569',
+            paddingBottom: '0.25rem',
+            borderBottom: '1px solid #e2e8f0'
+          }}>
+            <div>Item / Service Description</div>
+            <div>Unit / Qty</div>
+            <div>Unit Price ($)</div>
+            <div></div>
+          </div>
 
           {items.map((item, idx) => (
             <div key={idx} className={styles.itemRow}>

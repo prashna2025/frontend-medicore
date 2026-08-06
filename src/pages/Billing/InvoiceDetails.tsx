@@ -86,10 +86,10 @@ const InvoiceDetails = () => {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Description</th>
-              <th>Qty</th>
-              <th>Unit Price</th>
-              <th>Total</th>
+              <th>Item / Service Description</th>
+              <th>Unit (Qty)</th>
+              <th>Unit Price ($)</th>
+              <th>Total Amount ($)</th>
             </tr>
           </thead>
           <tbody>

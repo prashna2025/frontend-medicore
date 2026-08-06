@@ -227,7 +227,7 @@ const AppointmentList = () => {
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                        {apt.appointmentStatus === 'SCHEDULED' && (
+                        {(apt.appointmentStatus === 'BOOKED' || apt.appointmentStatus === 'SCHEDULED') && (
                           <button
                             className="btn btn-outline"
                             style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', color: '#16a34a', display: 'flex', alignItems: 'center' }}
@@ -238,12 +238,12 @@ const AppointmentList = () => {
                           </button>
                         )}
 
-                        {(apt.appointmentStatus === 'SCHEDULED' || apt.appointmentStatus === 'CHECKED_IN' || apt.appointmentStatus === 'IN_CONSULTATION') && (
+                        {(apt.appointmentStatus === 'BOOKED' || apt.appointmentStatus === 'SCHEDULED' || apt.appointmentStatus === 'CHECKED_IN' || apt.appointmentStatus === 'CONSULTING' || apt.appointmentStatus === 'IN_CONSULTATION') && (
                           <button
                             className="btn btn-primary"
                             style={{ padding: '0.25rem 0.625rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center' }}
                             onClick={async () => {
-                              if (apt.appointmentStatus === 'SCHEDULED') {
+                              if (apt.appointmentStatus === 'BOOKED' || apt.appointmentStatus === 'SCHEDULED') {
                                 try { await appointmentApi.checkInAppointment(apt.id); } catch {}
                               }
                               navigate(`/consultations/new/${apt.id}`);
