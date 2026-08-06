@@ -65,6 +65,7 @@ export const AppRoutes: React.FC = () => {
           {/* Doctors */}
           <Route path="/doctors" element={<DoctorList />} />
           <Route path="/doctors/new" element={<DoctorForm />} />
+          <Route path="/doctors/:id/edit" element={<DoctorForm />} />
           <Route path="/doctors/schedules" element={<DoctorSchedules />} />
 
           {/* Departments */}
@@ -91,6 +92,7 @@ export const AppRoutes: React.FC = () => {
           {/* Staff */}
           <Route path="/staff" element={<StaffList />} />
           <Route path="/staff/new" element={<StaffForm />} />
+          <Route path="/staff/:id/edit" element={<StaffForm />} />
         </Route>
       </Route>
 

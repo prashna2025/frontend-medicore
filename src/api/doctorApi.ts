@@ -29,8 +29,17 @@ export const doctorApi = {
     return response.data.data;
   },
 
-  updateDoctor: async (data: UpdateDoctorRequest): Promise<Doctor> => {
-    const response = await apiClient.put<ApiResponse<Doctor>>(`/doctors`, data);
+  updateDoctor: async (data: UpdateDoctorRequest & { id?: string }): Promise<Doctor> => {
+    const payload = {
+      doctorId: data.doctorId || data.id,
+      name: data.name,
+      address: data.address,
+      phoneNumber: data.phoneNumber,
+      consultationFee: data.consultationFee,
+      departmentId: data.departmentId || null,
+      specializationId: data.specializationId || null
+    };
+    const response = await apiClient.put<ApiResponse<Doctor>>(`/doctors`, payload);
     return response.data.data;
   },
 

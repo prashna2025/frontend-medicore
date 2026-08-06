@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { staffApi } from '../../api/staffApi';
 import type { Staff } from '../../types';
-import { Plus, UserCheck, Trash2, Mail, Phone } from 'lucide-react';
+import { Plus, UserCheck, Trash2, Mail, Phone, Edit2 } from 'lucide-react';
 import styles from './Staff.module.css';
 
 const StaffList = () => {
@@ -86,12 +86,18 @@ const StaffList = () => {
                   </td>
                   <td>{staff.gender || 'N/A'}</td>
                   <td>
-                    <button
-                      onClick={() => handleDelete(staff.id)}
-                      style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer' }}
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <Link to={`/staff/${staff.id}/edit`} style={{ color: '#2563eb' }} title="Edit Staff">
+                        <Edit2 size={16} />
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(staff.id)}
+                        style={{ border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer' }}
+                        title="Delete Staff"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -19,9 +19,9 @@ export const billingApi = {
     return response.data.data;
   },
 
-  getInvoicesByPatient: async (patientId: string, page = 0, size = 10): Promise<PagedResponse<Invoice>> => {
+  getInvoicesByPatient: async (patientId: string, pageNo = 0, pageSize = 10): Promise<PagedResponse<Invoice>> => {
     const response = await apiClient.get<ApiResponse<PagedResponse<Invoice>>>(`/invoices/patient/${patientId}`, {
-      params: { page, size }
+      params: { pageNo, pageSize }
     });
     return response.data.data;
   },

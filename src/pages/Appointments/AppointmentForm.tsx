@@ -102,7 +102,7 @@ const AppointmentForm = () => {
               >
                 <option value="">Select Registered Patient</option>
                 {patients.map(p => (
-                  <option key={p.id} value={p.id}>{p.firstName} {p.lastName} ({p.phoneNumber})</option>
+                  <option key={p.id} value={p.id}>{p.fullName || `${p.firstName || ''} ${p.lastName || ''}`.trim() || 'Patient'} ({p.phoneNumber})</option>
                 ))}
               </select>
             </div>

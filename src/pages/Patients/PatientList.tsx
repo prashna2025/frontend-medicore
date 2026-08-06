@@ -94,7 +94,7 @@ const PatientList = () => {
                 patients.map((patient) => (
                   <tr key={patient.id}>
                     <td className={styles.patientId}>{patient.patientNumber || patient.id}</td>
-                    <td className={styles.patientName}>{patient.firstName} {patient.lastName}</td>
+                    <td className={styles.patientName}>{patient.fullName || `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'N/A'}</td>
                     <td>{patient.phoneNumber}</td>
                     <td>
                       <span className={styles.badge}>{patient.gender}</span>

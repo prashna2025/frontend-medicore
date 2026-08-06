@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { staffApi } from '../../api/staffApi';
 import { Gender } from '../../types';
 import styles from './Staff.module.css';
 
 const StaffForm = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const isEdit = Boolean(id);
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -18,6 +20,31 @@ const StaffForm = () => {
     gender: Gender.MALE
   });
 
+  useEffect(() => {
+    if (id) {
+      const fetchStaff = async () => {
+        try {
+          setLoading(true);
+          const staff = await staffApi.getStaffById(id);
+          setFormData({
+            name: staff.name || '',
+            email: staff.email || '',
+            username: staff.username || '',
+            password: '',
+            phoneNumber: staff.phoneNumber || '',
+            address: staff.address || '',
+            gender: staff.gender || Gender.MALE
+          });
+        } catch (err) {
+          console.error('Failed to load staff details:', err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchStaff();
+    }
+  }, [id]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -27,10 +54,21 @@ const StaffForm = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      await staffApi.createStaff(formData);
+      if (isEdit && id) {
+        await staffApi.updateStaff({
+          staffId: id,
+          name: formData.name,
+          address: formData.address,
+          phoneNumber: formData.phoneNumber
+        });
+        alert('Staff details updated successfully!');
+      } else {
+        await staffApi.createStaff(formData);
+        alert('Staff registered successfully!');
+      }
       navigate('/staff');
-    } catch (err) {
-      alert('Failed to create staff member');
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to save staff details');
     } finally {
       setLoading(false);
     }
@@ -40,8 +78,8 @@ const StaffForm = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div>
-          <h1>Add Hospital Staff Member</h1>
-          <p style={{ color: '#64748b' }}>Register administrative and support staff accounts</p>
+          <h1>{isEdit ? 'Edit Staff Member' : 'Add Hospital Staff Member'}</h1>
+          <p style={{ color: '#64748b' }}>{isEdit ? 'Update staff personnel profile' : 'Register administrative and support staff accounts'}</p>
         </div>
       </div>
 
@@ -61,44 +99,48 @@ const StaffForm = () => {
               />
             </div>
 
-            <div className={styles.field}>
-              <label>Email Address *</label>
-              <input
-                type="email"
-                name="email"
-                required
-                className={styles.input}
-                placeholder="john.doe@medicore.com"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
+            {!isEdit && (
+              <>
+                <div className={styles.field}>
+                  <label>Email Address *</label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    className={styles.input}
+                    placeholder="john.doe@medicore.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </div>
 
-            <div className={styles.field}>
-              <label>Username *</label>
-              <input
-                type="text"
-                name="username"
-                required
-                className={styles.input}
-                placeholder="johndoe"
-                value={formData.username}
-                onChange={handleChange}
-              />
-            </div>
+                <div className={styles.field}>
+                  <label>Username *</label>
+                  <input
+                    type="text"
+                    name="username"
+                    required
+                    className={styles.input}
+                    placeholder="johndoe"
+                    value={formData.username}
+                    onChange={handleChange}
+                  />
+                </div>
 
-            <div className={styles.field}>
-              <label>Password *</label>
-              <input
-                type="password"
-                name="password"
-                required
-                className={styles.input}
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
+                <div className={styles.field}>
+                  <label>Password *</label>
+                  <input
+                    type="password"
+                    name="password"
+                    required
+                    className={styles.input}
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                </div>
+              </>
+            )}
 
             <div className={styles.field}>
               <label>Phone Number *</label>
@@ -115,7 +157,7 @@ const StaffForm = () => {
 
             <div className={styles.field}>
               <label>Gender</label>
-              <select name="gender" className={styles.select} value={formData.gender} onChange={handleChange}>
+              <select name="gender" className={styles.select} value={formData.gender} onChange={handleChange} disabled={isEdit}>
                 <option value={Gender.MALE}>Male</option>
                 <option value={Gender.FEMALE}>Female</option>
                 <option value={Gender.OTHER}>Other</option>
@@ -140,7 +182,7 @@ const StaffForm = () => {
               Cancel
             </Link>
             <button type="submit" disabled={loading} className={styles.primaryBtn}>
-              {loading ? 'Creating...' : 'Register Staff'}
+              {loading ? 'Saving...' : isEdit ? 'Update Staff' : 'Register Staff'}
             </button>
           </div>
         </form>

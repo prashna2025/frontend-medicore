@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Calendar, Phone, Mail, Stethoscope, DollarSign, Trash2 } from 'lucide-react';
+import { Plus, Search, Calendar, Phone, Mail, Stethoscope, DollarSign, Trash2, Edit2 } from 'lucide-react';
 import { doctorApi } from '../../api/doctorApi';
 import type { Doctor } from '../../types';
 import styles from './DoctorList.module.css';
@@ -119,9 +119,14 @@ const DoctorList = () => {
                   {doctor.consultationFee ? `$${doctor.consultationFee}` : '$50'}
                 </div>
                 {doctor.id && (
-                  <button onClick={() => handleDelete(doctor.id!)} className={styles.secondaryBtn} style={{ color: '#ef4444' }}>
-                    <Trash2 size={16} />
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <Link to={`/doctors/${doctor.id}/edit`} className={styles.secondaryBtn} style={{ color: '#2563eb' }} title="Edit Doctor">
+                      <Edit2 size={16} />
+                    </Link>
+                    <button onClick={() => handleDelete(doctor.id!)} className={styles.secondaryBtn} style={{ color: '#ef4444' }} title="Delete Doctor">
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
