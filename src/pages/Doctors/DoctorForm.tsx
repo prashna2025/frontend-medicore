@@ -88,6 +88,8 @@ const DoctorForm = () => {
       } else {
         await doctorApi.createDoctor({
           ...formData,
+          departmentId: formData.departmentId || undefined,
+          specializationId: formData.specializationId || undefined,
           consultationFee: Number(formData.consultationFee)
         });
         alert('Doctor registered successfully!');
@@ -214,8 +216,8 @@ const DoctorForm = () => {
           </div>
 
           <div className={styles.fieldGroup}>
-            <label>Department</label>
-            <select name="departmentId" className={styles.select} value={formData.departmentId} onChange={handleChange}>
+            <label>Department *</label>
+            <select name="departmentId" className={styles.select} value={formData.departmentId} onChange={handleChange} required>
               <option value="">Select Department</option>
               {departments.map((d) => (
                 <option key={d.id} value={d.id}>{d.name}</option>
@@ -224,8 +226,8 @@ const DoctorForm = () => {
           </div>
 
           <div className={styles.fieldGroup}>
-            <label>Specialization</label>
-            <select name="specializationId" className={styles.select} value={formData.specializationId} onChange={handleChange}>
+            <label>Specialization *</label>
+            <select name="specializationId" className={styles.select} value={formData.specializationId} onChange={handleChange} required>
               <option value="">Select Specialization</option>
               {specializations.map((s) => (
                 <option key={s.id} value={s.id}>{s.name}</option>

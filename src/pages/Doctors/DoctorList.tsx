@@ -13,7 +13,7 @@ const DoctorList = () => {
   const fetchDoctors = async () => {
     try {
       setLoading(true);
-      const res = await doctorApi.getDoctors();
+      const res = await doctorApi.getDoctors(0, 100);
       setDoctors(res.content || []);
     } catch (err) {
       console.error('Failed to load doctors:', err);
