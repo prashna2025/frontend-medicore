@@ -77,12 +77,13 @@ export const InvoiceStatus = {
   CANCELLED: 'CANCELLED' as InvoiceStatus
 } as const;
 
-export type PaymentMethod = 'CASH' | 'CARD' | 'INSURANCE' | 'ONLINE';
+export type PaymentMethod = 'CASH' | 'CREDIT_CARD' | 'INSURANCE' | 'ESEWA' | 'KHALTI';
 export const PaymentMethod = {
   CASH: 'CASH' as PaymentMethod,
-  CARD: 'CARD' as PaymentMethod,
+  CREDIT_CARD: 'CREDIT_CARD' as PaymentMethod,
   INSURANCE: 'INSURANCE' as PaymentMethod,
-  ONLINE: 'ONLINE' as PaymentMethod
+  ESEWA: 'ESEWA' as PaymentMethod,
+  KHALTI: 'KHALTI' as PaymentMethod
 } as const;
 
 // Patient Models

@@ -157,9 +157,10 @@ const InvoiceDetails = () => {
                   onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
                 >
                   <option value={PaymentMethod.CASH}>Cash</option>
-                  <option value={PaymentMethod.CARD}>Credit / Debit Card</option>
+                  <option value={PaymentMethod.CREDIT_CARD}>Credit / Debit Card</option>
                   <option value={PaymentMethod.INSURANCE}>Health Insurance</option>
-                  <option value={PaymentMethod.ONLINE}>Online Transfer</option>
+                  <option value={PaymentMethod.ESEWA}>eSewa</option>
+                  <option value={PaymentMethod.KHALTI}>Khalti</option>
                 </select>
               </div>
 
