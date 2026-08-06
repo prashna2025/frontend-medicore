@@ -12,9 +12,14 @@ export const appointmentApi = {
     return response.data.data;
   },
 
-  getAppointmentsByDate: async (date: string): Promise<Appointment[]> => {
+  getAllAppointments: async (): Promise<Appointment[]> => {
+    const response = await apiClient.get<ApiResponse<Appointment[]>>(`/v1/appointments`);
+    return response.data.data;
+  },
+
+  getAppointmentsByDate: async (date?: string): Promise<Appointment[]> => {
     const response = await apiClient.get<ApiResponse<Appointment[]>>(`/v1/appointments`, {
-      params: { date }
+      params: date ? { date } : {}
     });
     return response.data.data;
   },

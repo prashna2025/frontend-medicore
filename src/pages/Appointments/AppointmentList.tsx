@@ -11,7 +11,7 @@ const AppointmentList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [isTodayOnly, setIsTodayOnly] = useState(true);
+  const [viewMode, setViewMode] = useState<'all' | 'today' | 'date'>('all');
 
   // Reschedule Modal State
   const [rescheduleApt, setRescheduleApt] = useState<Appointment | null>(null);
@@ -22,20 +22,23 @@ const AppointmentList = () => {
 
   useEffect(() => {
     fetchAppointments();
-  }, [selectedDate, isTodayOnly]);
+  }, [selectedDate, viewMode]);
 
   const fetchAppointments = async () => {
     setIsLoading(true);
     try {
       let res: Appointment[];
-      if (isTodayOnly) {
+      if (viewMode === 'today') {
         res = await appointmentApi.getTodayAppointments();
-      } else {
+      } else if (viewMode === 'date') {
         res = await appointmentApi.getAppointmentsByDate(selectedDate);
+      } else {
+        res = await appointmentApi.getAllAppointments();
       }
       setAppointments(res || []);
     } catch (error) {
       console.error('Failed to fetch appointments', error);
+      setAppointments([]);
     } finally {
       setIsLoading(false);
     }
@@ -122,20 +125,27 @@ const AppointmentList = () => {
 
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <button
-              onClick={() => setIsTodayOnly(true)}
-              className={isTodayOnly ? "btn btn-primary" : "btn btn-outline"}
+              onClick={() => setViewMode('all')}
+              className={viewMode === 'all' ? "btn btn-primary" : "btn btn-outline"}
+              style={{ fontSize: '0.85rem' }}
+            >
+              All Appointments
+            </button>
+            <button
+              onClick={() => setViewMode('today')}
+              className={viewMode === 'today' ? "btn btn-primary" : "btn btn-outline"}
               style={{ fontSize: '0.85rem' }}
             >
               Today's Queue
             </button>
             <button
-              onClick={() => setIsTodayOnly(false)}
-              className={!isTodayOnly ? "btn btn-primary" : "btn btn-outline"}
+              onClick={() => setViewMode('date')}
+              className={viewMode === 'date' ? "btn btn-primary" : "btn btn-outline"}
               style={{ fontSize: '0.85rem' }}
             >
               Filter by Date
             </button>
-            {!isTodayOnly && (
+            {viewMode === 'date' && (
               <input
                 type="date"
                 className="input-field"
@@ -199,11 +209,16 @@ const AppointmentList = () => {
                           </button>
                         )}
 
-                        {(apt.appointmentStatus === 'CHECKED_IN' || apt.appointmentStatus === 'IN_CONSULTATION') && (
+                        {(apt.appointmentStatus === 'SCHEDULED' || apt.appointmentStatus === 'CHECKED_IN' || apt.appointmentStatus === 'IN_CONSULTATION') && (
                           <button
                             className="btn btn-primary"
                             style={{ padding: '0.25rem 0.625rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center' }}
-                            onClick={() => navigate(`/consultations/new/${apt.id}`)}
+                            onClick={async () => {
+                              if (apt.appointmentStatus === 'SCHEDULED') {
+                                try { await appointmentApi.checkInAppointment(apt.id); } catch {}
+                              }
+                              navigate(`/consultations/new/${apt.id}`);
+                            }}
                             title="Start Consultation"
                           >
                             <FileText size={14} style={{ marginRight: '4px' }} /> Consult
