@@ -41,12 +41,12 @@ const InvoiceDetails = () => {
       await billingApi.recordPayment(id, {
         amountPaid: Number(paymentAmount),
         paymentMethod,
-        transactionReference: transactionRef
+        transactionId: transactionRef
       });
       alert('Payment recorded successfully!');
       fetchInvoice();
-    } catch (err) {
-      alert('Failed to record payment');
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to record payment');
     } finally {
       setSubmitting(false);
     }
@@ -73,7 +73,9 @@ const InvoiceDetails = () => {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
           <div>
             <h3 style={{ color: '#64748b', fontSize: '0.875rem' }}>Invoice To</h3>
-            <p style={{ fontSize: '1.125rem', fontWeight: 600, marginTop: '0.25rem' }}>Patient Ref: {invoice.patientId}</p>
+            <p style={{ fontSize: '1.125rem', fontWeight: 600, marginTop: '0.25rem' }}>
+              {(invoice as any).patientName || `Patient: ${invoice.patientId}`}
+            </p>
           </div>
           <div style={{ textAlign: 'right' }}>
             <h3 style={{ color: '#64748b', fontSize: '0.875rem' }}>Date Issued</h3>

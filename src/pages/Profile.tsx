@@ -1,81 +1,158 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useAuth } from '../hooks/useAuth';
-import { userService } from '../services/userService';
-import Input from '../components/Input';
-import Button from '../components/Button';
-import Card from '../components/Card';
-import ErrorMessage from '../components/ErrorMessage';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { userService } from "../services/userService";
+import { User, Mail, Shield, Save, CheckCircle } from "lucide-react";
 
-const profileSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-});
-
-type ProfileFormValues = z.infer<typeof profileSchema>;
+const inputStyle: React.CSSProperties = {
+  width: "100%", padding: "0.7rem 0.875rem",
+  background: "rgba(255,255,255,0.07)",
+  border: "1px solid rgba(255,255,255,0.14)",
+  borderRadius: "0.625rem",
+  color: "#f1f5f9", fontSize: "0.9rem",
+  outline: "none", fontFamily: "inherit",
+  transition: "border-color 0.2s, box-shadow 0.2s"
+};
 
 export const Profile: React.FC = () => {
   const { user, updateUser } = useAuth();
-  const [serverError, setServerError] = useState<string | null>(null);
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: user?.name || '',
-      email: user?.email || '',
-    },
-  });
-
-  const onSubmit = async (values: ProfileFormValues) => {
-    setServerError(null);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(false);
     try {
-      const updatedUser = await userService.updateProfile(values);
-      updateUser(updatedUser);
-      toast.success('Profile updated successfully');
+      setLoading(true);
+      const updatedUser = await userService.updateProfile({ name, email });
+      if (updateUser) updateUser(updatedUser);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
-      setServerError(err.response?.data?.message || 'Failed to update profile');
+      setError(err.response?.data?.message || "Failed to update profile");
+    } finally {
+      setLoading(false);
     }
   };
 
+  const onFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.currentTarget.style.borderColor = "rgba(99,102,241,0.6)";
+    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.15)";
+  };
+  const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.currentTarget.style.borderColor = "rgba(255,255,255,0.14)";
+    e.currentTarget.style.boxShadow = "none";
+  };
+
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div style={{ maxWidth: 680, margin: "0 auto", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">User Profile</h1>
-        <p className="text-sm text-slate-500">Manage your personal account settings and details</p>
+        <h1 style={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontSize: "1.75rem", fontWeight: 800, color: "#f8fafc", letterSpacing: "-0.02em" }}>
+          Profile Settings
+        </h1>
+        <p style={{ color: "#94a3b8", fontSize: "0.9rem", marginTop: "0.25rem" }}>
+          Manage your personal account information
+        </p>
       </div>
 
-      <Card>
-        <ErrorMessage message={serverError} />
+      {/* Avatar + Role card */}
+      <div style={{
+        background: "rgba(255,255,255,0.07)", backdropFilter: "blur(16px)",
+        border: "1px solid rgba(255,255,255,0.11)", borderRadius: "1rem", padding: "1.5rem",
+        display: "flex", alignItems: "center", gap: "1.25rem"
+      }}>
+        <div style={{
+          width: 72, height: 72, borderRadius: "50%",
+          background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: "1.75rem", fontWeight: 800, color: "white",
+          boxShadow: "0 8px 20px rgba(59,130,246,0.35)", flexShrink: 0
+        }}>
+          {user?.name?.[0]?.toUpperCase() || "U"}
+        </div>
+        <div>
+          <p style={{ fontSize: "1.125rem", fontWeight: 700, color: "#f8fafc" }}>{user?.name || "Unknown User"}</p>
+          <p style={{ fontSize: "0.875rem", color: "#94a3b8" }}>{user?.email}</p>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", marginTop: "0.375rem", background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 999, padding: "3px 10px" }}>
+            <Shield size={12} color="#a78bfa" />
+            <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#a78bfa" }}>{(user?.role || "USER").replace(/_/g, " ")}</span>
+          </div>
+        </div>
+      </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
-          <Input
-            label="Full Name"
-            type="text"
-            error={errors.name?.message}
-            {...register('name')}
-          />
+      {/* Edit form */}
+      <div style={{
+        background: "rgba(255,255,255,0.07)", backdropFilter: "blur(16px)",
+        border: "1px solid rgba(255,255,255,0.11)", borderRadius: "1rem", padding: "1.75rem"
+      }}>
+        <h2 style={{ fontSize: "1rem", fontWeight: 700, color: "#e2e8f0", marginBottom: "1.25rem" }}>Edit Information</h2>
 
-          <Input
-            label="Email Address"
-            type="email"
-            error={errors.email?.message}
-            {...register('email')}
-          />
+        {error && (
+          <div style={{ padding: "0.75rem 1rem", background: "rgba(244,63,94,0.12)", border: "1px solid rgba(244,63,94,0.3)", borderRadius: "0.625rem", color: "#fb7185", fontSize: "0.875rem", marginBottom: "1rem" }}>
+            {error}
+          </div>
+        )}
 
-          <div className="pt-4 flex justify-end">
-            <Button type="submit" isLoading={isSubmitting}>
-              Save Profile Changes
-            </Button>
+        {success && (
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem 1rem", background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.3)", borderRadius: "0.625rem", color: "#34d399", fontSize: "0.875rem", marginBottom: "1rem" }}>
+            <CheckCircle size={16} /> Profile updated successfully!
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.125rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
+            <label style={{ fontSize: "0.8125rem", fontWeight: 600, color: "#cbd5e1", display: "flex", alignItems: "center", gap: "0.375rem" }}>
+              <User size={14} /> Full Name
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Enter your full name"
+              style={inputStyle}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              required
+            />
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
+            <label style={{ fontSize: "0.8125rem", fontWeight: 600, color: "#cbd5e1", display: "flex", alignItems: "center", gap: "0.375rem" }}>
+              <Mail size={14} /> Email Address
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              style={inputStyle}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              required
+            />
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: "0.5rem" }}>
+            <button type="submit" disabled={loading} style={{
+              display: "flex", alignItems: "center", gap: "0.5rem",
+              padding: "0.625rem 1.5rem", borderRadius: "0.625rem",
+              background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+              color: "white", fontWeight: 700, fontSize: "0.9rem", border: "none",
+              cursor: loading ? "not-allowed" : "pointer",
+              opacity: loading ? 0.7 : 1,
+              boxShadow: "0 4px 14px rgba(59,130,246,0.35)",
+              transition: "all 0.2s"
+            }}>
+              <Save size={16} />
+              {loading ? "Saving..." : "Save Changes"}
+            </button>
           </div>
         </form>
-      </Card>
+      </div>
     </div>
   );
 };

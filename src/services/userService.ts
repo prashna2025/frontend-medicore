@@ -1,14 +1,13 @@
-import { api } from './api';
-import type { User, UserProfileUpdate } from '../types/user';
+import { apiClient } from '../api/client';
 
 export const userService = {
-  getProfile: async (): Promise<User> => {
-    const response = await api.get('/users/profile');
+  getProfile: async () => {
+    const response = await apiClient.get('/users/profile');
     return response.data.data || response.data;
   },
 
-  updateProfile: async (data: UserProfileUpdate): Promise<User> => {
-    const response = await api.put('/users/profile', data);
+  updateProfile: async (data: { name: string; email: string }) => {
+    const response = await apiClient.put('/users/profile', data);
     return response.data.data || response.data;
   }
 };

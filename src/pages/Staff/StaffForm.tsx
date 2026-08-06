@@ -17,7 +17,8 @@ const StaffForm = () => {
     password: '',
     phoneNumber: '',
     address: '',
-    gender: Gender.MALE
+    gender: Gender.MALE,
+    role: 'RECEPTIONIST'
   });
 
   useEffect(() => {
@@ -125,6 +126,15 @@ const StaffForm = () => {
                     value={formData.username}
                     onChange={handleChange}
                   />
+                </div>
+
+                <div className={styles.field}>
+                  <label>Staff Role *</label>
+                  <select name="role" className={styles.select} value={formData.role} onChange={handleChange} required>
+                    <option value="RECEPTIONIST">Receptionist</option>
+                    <option value="DOCTOR">Doctor</option>
+                    <option value="PATIENT">Patient</option>
+                  </select>
                 </div>
 
                 <div className={styles.field}>

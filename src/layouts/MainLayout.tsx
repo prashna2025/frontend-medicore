@@ -1,18 +1,21 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Sidebar from '../components/Sidebar';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 export const MainLayout: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative", zIndex: 1 }}>
       <Navbar />
-      <div className="flex flex-1">
-        <Sidebar />
-        <main className="flex-1 p-6 max-w-7xl mx-auto w-full overflow-y-auto">
-          <Outlet />
-        </main>
-      </div>
+      <main style={{
+        flex: 1,
+        padding: "2rem 1.5rem",
+        maxWidth: "1400px",
+        width: "100%",
+        margin: "0 auto",
+        animation: "fadeInUp 0.35s ease-out"
+      }}>
+        <Outlet />
+      </main>
     </div>
   );
 };

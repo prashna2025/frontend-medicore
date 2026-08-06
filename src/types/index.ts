@@ -304,6 +304,7 @@ export interface Invoice {
   id: string;
   invoiceNumber: string;
   patientId: string;
+  patientName?: string;
   subTotal: number;
   discountAmount: number;
   taxAmount: number;
@@ -329,6 +330,7 @@ export interface CreateInvoiceRequest {
 export interface RecordPaymentRequest {
   amountPaid: number;
   paymentMethod: PaymentMethod;
+  transactionId?: string;
   transactionReference?: string;
 }
 
@@ -360,6 +362,7 @@ export interface CreateStaffRequest {
   address?: string;
   phoneNumber: string;
   gender: Gender;
+  role?: string;
 }
 
 export interface UpdateStaffRequest {
